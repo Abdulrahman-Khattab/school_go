@@ -2,13 +2,19 @@ const express = require('express');
 const connectDB = require('./db/connect');
 require('express-async-errors');
 require('dotenv');
+const fileUploader = require('express-fileupload');
+const School_post_Router = require('./routes/school_post');
 
 const app = express();
-
 app.use(express.json());
+app.use(fileUploader());
 
 // static
 app.use(express.static('public'));
+
+//Routers
+
+app.use('/schoolSystem/v1/api/schoolPost', School_post_Router);
 
 app.get('/', async (req, res) => {
   res.send('hello world');

@@ -14,6 +14,7 @@ const schoolPostSchema = new monggose.Schema({
     type: Boolean,
     default: false,
   },
+  timestamps: true,
 });
 
 module.exports = monggose.model('School_post', schoolPostSchema);

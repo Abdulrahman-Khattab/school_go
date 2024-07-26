@@ -1,6 +1,9 @@
 const School_post = require('../model/school_post');
 const { BadRequestError, NotFoundError } = require('../errors');
 const path = require('path');
+const simpleGit = require('simple-git');
+const fs = require('fs');
+require('dotenv').config();
 
 const createSchoolPost = async (req, res) => {
   const { description } = req.body;
@@ -11,15 +14,12 @@ const createSchoolPost = async (req, res) => {
 
   if (!req.files) {
     const school_post = await School_post.create({ description });
-    res
-      .json({ data: school_post, msg: 'school post created successfully' })
-      .status(201);
+    return res
+      .status(201)
+      .json({ data: school_post, msg: 'school post created successfully' });
   }
 
   const imageValue = req.files.image;
-
-  console.log('hello world');
-  console.log(req.files.image);
 
   if (!imageValue.mimetype.startsWith('image')) {
     throw new BadRequestError('please provide image');
@@ -34,17 +34,51 @@ const createSchoolPost = async (req, res) => {
 
   const imagePath = path.join(
     __dirname,
-    `../public/photo/` + `${imageValue.name}`
+    `../public/photo/`,
+    `${imageValue.name}`
   );
-
   await imageValue.mv(imagePath);
 
-  const image = `/photo/${imageValue.name}`;
-  console.log(image);
+  const imageBase64 = fs.readFileSync(imagePath, { encoding: 'base64' });
 
-  const school_post = await School_post.create({ ...req.body, image });
+  try {
+    // Dynamic import
+    const { Octokit } = await import('@octokit/rest');
 
-  res.json({ data: school_post, msg: 'school post created sucessfully' });
+    const octokit = new Octokit({
+      auth: process.env.GIT_SECRET, // Replace with your GitHub personal access token
+    });
+
+    const response = await octokit.rest.repos.createOrUpdateFileContents({
+      owner: 'Abdulrahman-Khattab', // Replace with your GitHub username
+      repo: 'school_go', // Replace with your repository name
+      path: `public/photo/${imageValue.name}`,
+      message: `Add new image ${imageValue.name}`,
+      content: imageBase64,
+      committer: {
+        name: 'YOUR_NAME', // Replace with your name
+        email: 'YOUR_EMAIL', // Replace with your email
+      },
+      author: {
+        name: 'YOUR_NAME', // Replace with your name
+        email: 'YOUR_EMAIL', // Replace with your email
+      },
+    });
+
+    const imageUrl = `https://raw.githubusercontent.com/Abdulrahman-Khattab/school_go/main/public/photo/${imageValue.name}`;
+
+    const school_post = await School_post.create({
+      ...req.body,
+      image: imageUrl,
+    });
+
+    res.json({ data: school_post, msg: 'school post created successfully' });
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to upload image to GitHub');
+  } finally {
+    fs.unlinkSync(imagePath); // Remove the image from local storage after uploading
+  }
 };
 
 const getAllSchoolPost = async (req, res) => {

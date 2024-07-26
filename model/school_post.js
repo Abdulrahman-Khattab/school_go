@@ -1,20 +1,24 @@
 const monggose = require('mongoose');
 
-const schoolPostSchema = new monggose.Schema({
-  image: {
-    type: String,
-  },
+const schoolPostSchema = new monggose.Schema(
+  {
+    image: {
+      type: String,
+    },
 
-  description: {
-    type: String,
-    required: [true, 'please provide image'],
-  },
+    description: {
+      type: String,
+      required: [true, 'please provide image'],
+    },
 
-  notificaiton: {
-    type: Boolean,
-    default: false,
+    notificaiton: {
+      type: Boolean,
+      default: false,
+    },
   },
-  timestamps: true,
-});
+  {
+    timestamps: true,
+  }
+);
 
 module.exports = monggose.model('School_post', schoolPostSchema);

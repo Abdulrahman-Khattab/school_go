@@ -1,82 +1,35 @@
-const path = require('path');
-const fs = require('fs');
-const { StatusCodes } = require('http-status-codes');
-const School_post = require('./models/School_post'); // Adjust the path to your model
-const { badRequestError } = require('./errors'); // Adjust the path to your error handler
-const admin = require('firebase-admin');
-const { v4: uuidv4 } = require('uuid'); // Import UUID
-const serviceAccount = require('./path/to/serviceAccountKey.json');
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  storageBucket: 'schoolsystem-76875.appspot.com',
-});
-
-const bucket = admin.storage().bucket();
-
-const createSchoolPost = async (req, res) => {
-  const { description } = req.body;
-
-  if (!description) {
-    return badRequestError(res, 'please provide description');
+const deleteSchoolPost = async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return notFoundError(res, 'please provide ID');
   }
 
-  if (!req.files) {
-    const school_post = await School_post.create({ description });
-    return res.status(StatusCodes.ACCEPTED).json({ data: school_post });
+  const deleted_school_post = await School_post.findOneAndDelete({ _id: id });
+
+  if (!deleted_school_post) {
+    return notFoundError(res, 'there is no such post in the database');
   }
 
-  const imageValue = req.files.image;
+  // Extract the image URL from the deleted post
+  const imageUrl = deleted_school_post.image;
 
-  if (!imageValue.mimetype.startsWith('image')) {
-    return badRequestError(res, 'please provide image');
-  }
+  // Extract the file path from the image URL
+  const filePath = decodeURIComponent(imageUrl.split('/o/')[1].split('?')[0]);
 
-  const size = 1024 * 1024 * 5;
-  if (imageValue.size > size) {
+  try {
+    // Delete the file from Firebase Storage
+    await bucket.file(filePath).delete();
+    console.log(`Successfully deleted file: ${filePath}`);
+  } catch (error) {
+    console.error(`Failed to delete file: ${filePath}`, error);
     return badRequestError(
       res,
-      'please provide image that size is less than 5MB'
+      'Failed to delete associated image from Firebase Storage'
     );
   }
 
-  const imagePath = path.join(
-    __dirname,
-    `../public/photo/`,
-    `${imageValue.name}`
-  );
-  await imageValue.mv(imagePath);
-
-  const downloadToken = uuidv4(); // Generate a unique token
-
-  try {
-    const metadata = {
-      metadata: {
-        firebaseStorageDownloadTokens: downloadToken,
-      },
-      contentType: imageValue.mimetype,
-    };
-
-    await bucket.upload(imagePath, {
-      destination: `public/photo/${imageValue.name}`,
-      metadata: metadata,
-    });
-
-    const file = bucket.file(`public/photo/${imageValue.name}`);
-    const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${
-      bucket.name
-    }/o/${encodeURIComponent(file.name)}?alt=media&token=${downloadToken}`;
-
-    const school_post = await School_post.create({
-      ...req.body,
-      image: imageUrl,
-    });
-
-    res.json({ data: school_post, msg: '' });
-  } catch (error) {
-    console.error(error);
-    return badRequestError(res, 'Failed to upload image to Firebase Storage');
-  } finally {
-    fs.unlinkSync(imagePath); // Remove the image from local storage after uploading
-  }
+  res.status(StatusCodes.ACCEPTED).json({
+    data: deleted_school_post,
+    msg: '',
+  });
 };

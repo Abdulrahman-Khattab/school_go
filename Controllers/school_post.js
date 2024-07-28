@@ -5,9 +5,26 @@ const fs = require('fs');
 const { notFoundError, badRequestError } = require('../errors_2');
 const { StatusCodes } = require('http-status-codes');
 require('dotenv').config();
+const admin = require('firebase-admin');
+const { v4: uuidv4 } = require('uuid'); // Import UUID
+const generateRandomString = require('../utility/randomGenerator');
+
+admin.initializeApp({
+  credential: admin.credential.cert({
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+  }),
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+});
+
+const bucket = admin.storage().bucket();
 
 const createSchoolPost = async (req, res) => {
   const { description } = req.body;
+
+  const randomValue = generateRandomString(10);
+  console.log(randomValue);
 
   if (!description) {
     return badRequestError(res, 'please provide description');
@@ -39,33 +56,24 @@ const createSchoolPost = async (req, res) => {
   );
   await imageValue.mv(imagePath);
 
-  const imageBase64 = fs.readFileSync(imagePath, { encoding: 'base64' });
-
+  const downloadToken = uuidv4(); // Generate a unique token
   try {
-    // Dynamic import
-    const { Octokit } = await import('@octokit/rest');
+    const metadata = {
+      metadata: {
+        firebaseStorageDownloadTokens: downloadToken,
+      },
+      contentType: imageValue.mimetype,
+    };
 
-    const octokit = new Octokit({
-      auth: process.env.GIT_SECRET, // Replace with your GitHub personal access token
+    await bucket.upload(imagePath, {
+      destination: `public/photo/${randomValue + imageValue.name}`,
+      metadata: metadata,
     });
 
-    const response = await octokit.rest.repos.createOrUpdateFileContents({
-      owner: 'Abdulrahman-Khattab', // Replace with your GitHub username
-      repo: 'school_go', // Replace with your repository name
-      path: `public/photo/${imageValue.name}`,
-      message: `Add new image ${imageValue.name}`,
-      content: imageBase64,
-      committer: {
-        name: 'YOUR_NAME', // Replace with your name
-        email: 'YOUR_EMAIL', // Replace with your email
-      },
-      author: {
-        name: 'YOUR_NAME', // Replace with your name
-        email: 'YOUR_EMAIL', // Replace with your email
-      },
-    });
-
-    const imageUrl = `https://raw.githubusercontent.com/Abdulrahman-Khattab/school_go/main/public/photo/${imageValue.name}`;
+    const file = bucket.file(`public/photo/${imageValue.name}`);
+    const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${
+      bucket.name
+    }/o/${encodeURIComponent(file.name)}?alt=media&token=${downloadToken}`;
 
     const school_post = await School_post.create({
       ...req.body,
@@ -75,7 +83,7 @@ const createSchoolPost = async (req, res) => {
     res.json({ data: school_post, msg: '' });
   } catch (error) {
     console.error(error);
-    return badRequestError(res, 'Failed to upload image to GitHub');
+    return badRequestError(res, 'Failed to upload image to Firebase Storage');
   } finally {
     fs.unlinkSync(imagePath); // Remove the image from local storage after uploading
   }

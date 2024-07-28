@@ -1,5 +1,4 @@
 const School_post = require('../model/school_post');
-
 const monggose = require('mongoose');
 const path = require('path');
 const fs = require('fs');

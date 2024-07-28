@@ -1,32 +1,31 @@
 const StudentMarks = require('../model/student_marks');
-const { BadRequestError } = require('../errors');
-const { StatusCodes } = require('http-status-codes');
+const { badRequestError } = require('../errors_2');
 
 const createStudentMarks = async (req, res) => {
   const { studentName, subjectTitle, examType, studentMark } = req.body;
   if (!studentName) {
-    throw new BadRequestError('please provide student name ');
+    return badRequestError(res, 'please provide student name ');
   }
   if (!subjectTitle) {
-    throw new BadRequestError('please provide subject title ');
+    return badRequestError(res, 'please provide subject title ');
   }
   if (!examType) {
-    throw new BadRequestError('please provide exam type ');
+    return badRequestError(res, 'please provide exam type ');
   }
   if (!studentMark) {
-    throw new BadRequestError('please provide student Mark ');
+    return badRequestError(res, 'please provide student Mark ');
   }
 
   const studentMarkRecord = await StudentMarks.create({ ...req.body });
 
   res.json({
     studentMarkRecord,
-    msg: 'Student mark record created sucessfully',
+    msg: '',
   });
 };
 
 const getStudentMarks = async (req, res) => {
-  const { studentName, examType, studentMark, subjectTitle } = req.query;
+  const { studentName, examType, studentMark, subjectTitle, id } = req.query;
 
   const studentQuery = {};
 
@@ -43,33 +42,40 @@ const getStudentMarks = async (req, res) => {
   if (subjectTitle) {
     studentQuery.subjectTitle = subjectTitle;
   }
+  if (id) {
+    studentQuery.id = id;
+  }
 
   const studentsInfo = await StudentMarks.find(studentQuery);
 
-  res.json({ studentsInfo, msg: 'information retrievd sucessfully' });
+  res.json({ studentsInfo, msg: '' });
 };
 
 const deleteStudentMark = async (req, res) => {
   const { name, subject, examType, time } = req.params;
   if (!name) {
-    throw new BadRequestError(
+    return badRequestError(
+      res,
       'please provide name of person that grade wanted to be deleted'
     );
   }
   if (!subject) {
-    throw new BadRequestError(
+    return badRequestError(
+      res,
       'please provide name of subject that grade wanted to be deleted'
     );
   }
 
   if (!examType) {
-    throw new BadRequestError(
+    return badRequestError(
+      res,
       'please provide exam type of that grade that wanted to be deleted'
     );
   }
 
   if (!time) {
-    throw new BadRequestError(
+    return badRequestError(
+      res,
       'please provide time of that grade that wanted to be deleted'
     );
   }
@@ -82,14 +88,15 @@ const deleteStudentMark = async (req, res) => {
   });
 
   if (!deletedSutdentGrade) {
-    return res.status(StatusCodes.NOT_FOUND).json({
-      msg: 'This Item does not exist in database make sure you provided correct information',
-    });
+    return badRequestError(
+      res,
+      'This Item does not exist in database make sure you provided correct information'
+    );
   }
 
   res.json({
     deletedSutdentGrade,
-    msg: 'information of student grade deleted sucessfully',
+    msg: '',
   });
 };
 

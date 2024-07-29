@@ -27,4 +27,15 @@ const studentsMarksSchema = new monggose.Schema(
   }
 );
 
+// TIME TEST FUNCTION
+
+/*studentsMarksSchema.pre('save', function (next) {
+  const now = new Date();
+  const oneMonthLater = new Date(now.setMonth(now.getMonth() + 6));
+
+  this.createdAt = oneMonthLater;
+  this.updatedAt = oneMonthLater;
+  next();
+});*/
+
 module.exports = monggose.model('StudentMarks', studentsMarksSchema);

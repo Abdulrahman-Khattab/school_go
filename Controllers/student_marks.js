@@ -1,5 +1,7 @@
 const StudentMarks = require('../model/student_marks');
 const { badRequestError } = require('../errors_2');
+const mongoose = require('mongoose');
+const { StatusCodes } = require('http-status-codes');
 
 const createStudentMarks = async (req, res) => {
   const { studentName, subjectTitle, examType, studentMark } = req.body;
@@ -37,7 +39,7 @@ const getStudentMarks = async (req, res) => {
   }
 
   if (studentMark) {
-    studentQuery.studentNameMark = studentMark;
+    studentQuery.studentMark = studentMark;
   }
   if (subjectTitle) {
     studentQuery.subjectTitle = subjectTitle;
@@ -52,39 +54,18 @@ const getStudentMarks = async (req, res) => {
 };
 
 const deleteStudentMark = async (req, res) => {
-  const { name, subject, examType, time } = req.params;
-  if (!name) {
-    return badRequestError(
-      res,
-      'please provide name of person that grade wanted to be deleted'
-    );
-  }
-  if (!subject) {
-    return badRequestError(
-      res,
-      'please provide name of subject that grade wanted to be deleted'
-    );
+  const { id } = req.params;
+
+  if (!id) {
+    return badRequestError(res, 'Please provide student mark id ');
   }
 
-  if (!examType) {
-    return badRequestError(
-      res,
-      'please provide exam type of that grade that wanted to be deleted'
-    );
-  }
-
-  if (!time) {
-    return badRequestError(
-      res,
-      'please provide time of that grade that wanted to be deleted'
-    );
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return notFoundError(res, 'Please return valid id format');
   }
 
   const deletedSutdentGrade = await StudentMarks.findOneAndDelete({
-    studentName: name,
-    examType: examType,
-    subjectTitle: subject,
-    createdAt: new Date(time),
+    _id: id,
   });
 
   if (!deletedSutdentGrade) {
@@ -101,7 +82,44 @@ const deleteStudentMark = async (req, res) => {
 };
 
 const updateStudentMarks = async (req, res) => {
-  res.send('hello update student mark ');
+  const { id } = req.params;
+  const { studentName, subjectTitle, examType, studentMark } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return notFoundError(res, 'Please return valid id format');
+  }
+  const studentUpdateObject = {};
+
+  if (studentName) {
+    studentUpdateObject.studentName = studentName;
+  }
+  if (examType) {
+    studentUpdateObject.examType = examType;
+  }
+
+  if (studentMark) {
+    studentUpdateObject.studentMark = studentMark;
+  }
+  if (subjectTitle) {
+    studentUpdateObject.subjectTitle = subjectTitle;
+  }
+
+  const updatedStudentGradeInformation = await StudentMarks.findOneAndUpdate(
+    { _id: id },
+    studentUpdateObject,
+    {
+      runValidators: true,
+      new: true,
+    }
+  );
+
+  if (!updatedStudentGradeInformation) {
+    return badRequestError(res, 'something Wrong happended please try again');
+  }
+
+  res
+    .status(StatusCodes.OK)
+    .json({ data: updatedStudentGradeInformation, msg: '' });
 };
 
 module.exports = {

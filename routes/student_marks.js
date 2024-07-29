@@ -11,7 +11,7 @@ const Router = express.Router();
 
 Router.get('/', getStudentMarks);
 Router.post('/', createStudentMarks);
-Router.delete('/:name/:subject/:examType/:time', deleteStudentMark);
-Router.patch('/:name/:subject/:examType/:time', updateStudentMarks);
+Router.delete('/:id', deleteStudentMark);
+Router.patch('/:id', updateStudentMarks);
 
 module.exports = Router;

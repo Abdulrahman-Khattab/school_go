@@ -40,7 +40,7 @@ You agree not to submit, post, or display any content that:
 
 ## 4. Privacy
 
-Your use of our Services is also governed by our Privacy Policy, which is incorporated into these Terms by reference. Please review our [Privacy Policy](link-to-privacy-policy) to understand our practices.
+Your use of our Services is also governed by our Privacy Policy, which is incorporated into these Terms by reference. Please review our [Privacy Policy](https://github.com/Abdulrahman-Khattab/school_go/blob/main/privacyPolicy.md) to understand our practices.
 
 ## 5. Intellectual Property
 

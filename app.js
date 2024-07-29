@@ -1,3 +1,4 @@
+// main imported library
 const express = require('express');
 const connectDB = require('./db/connect');
 require('express-async-errors');
@@ -8,6 +9,7 @@ const fileUploader = require('express-fileupload');
 const School_post_Router = require('./routes/school_post');
 const student_marks_router = require('./routes/student_marks');
 
+// using main utility library
 const app = express();
 app.use(express.json());
 app.use(fileUploader());
@@ -19,10 +21,12 @@ app.use(express.static('public'));
 app.use('/schoolSystem/v1/api/schoolPost', School_post_Router);
 app.use('/schoolSystem/v1/api/studentMarks', student_marks_router);
 
+// front-page (test mode only)
 app.get('/', async (req, res) => {
   res.send('hello world');
 });
 
+// running server
 const start = async () => {
   try {
     await connectDB(

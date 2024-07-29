@@ -127,6 +127,21 @@ const deleteSchoolPost = async (req, res) => {
     return notFoundError(res, 'please provide ID');
   }
 
+  const school_post_no_image = await School_post.findOne({ _id: id });
+
+  if (school_post_no_image.image == '') {
+    const deleted_school_post_no_image = await School_post.findOneAndDelete({
+      _id: id,
+    });
+
+    return res.status(StatusCodes.ACCEPTED).json({
+      data: deleted_school_post_no_image,
+      msg: '',
+    });
+  }
+
+  // Now code with school post with image
+
   const deleted_school_post = await School_post.findOneAndDelete({ _id: id });
 
   if (!deleted_school_post) {

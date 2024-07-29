@@ -4,6 +4,7 @@ const schoolPostSchema = new monggose.Schema(
   {
     image: {
       type: String,
+      default: '',
     },
 
     description: {

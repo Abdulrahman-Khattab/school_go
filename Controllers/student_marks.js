@@ -19,7 +19,7 @@ const createStudentMarks = async (req, res) => {
   const studentMarkRecord = await StudentMarks.create({ ...req.body });
 
   res.json({
-    studentMarkRecord,
+    data: studentMarkRecord,
     msg: '',
   });
 };
@@ -48,7 +48,7 @@ const getStudentMarks = async (req, res) => {
 
   const studentsInfo = await StudentMarks.find(studentQuery);
 
-  res.json({ studentsInfo, msg: '' });
+  res.json({ data: studentsInfo, msg: '' });
 };
 
 const deleteStudentMark = async (req, res) => {
@@ -95,7 +95,7 @@ const deleteStudentMark = async (req, res) => {
   }
 
   res.json({
-    deletedSutdentGrade,
+    data: deletedSutdentGrade,
     msg: '',
   });
 };

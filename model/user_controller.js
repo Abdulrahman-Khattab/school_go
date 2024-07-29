@@ -1,7 +1,6 @@
 const monggose = require('mongoose');
 const validator = require('validator');
-
-const userStudentSchema = new monggose.Schema(
+const userControllerSchema = new monggose.Schema(
   {
     name: {
       type: String,
@@ -39,29 +38,9 @@ const userStudentSchema = new monggose.Schema(
 
     role: {
       type: String,
-      default: 'student',
+      default: 'controller',
     },
 
-    classNames: {
-      type: String,
-      required: [true, 'please provide student class Name'],
-    },
-
-    classType: {
-      type: String,
-      required: [true, 'please provide student class type'],
-    },
-
-    student_parents: {
-      type: [String],
-      required: [true, 'please provide student gurdian'],
-      validate: {
-        validator: function (v) {
-          v.length > 0;
-        },
-        message: 'Please at least add 1 gurdian',
-      },
-    },
     image: {
       type: String,
       default: '',
@@ -72,4 +51,4 @@ const userStudentSchema = new monggose.Schema(
   }
 );
 
-module.exports = monggose.model('STUDENT_SCHEMA', userStudentSchema);
+module.exports = monggose.model('CONTROLLER_SCHEMA', userControllerSchema);

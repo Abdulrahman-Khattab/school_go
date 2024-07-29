@@ -32,6 +32,6 @@
     "octokit": "^4.0.2",
     "simple-git": "^3.25.0",
     "uuid": "^10.0.0",
-    "validator": "^13.11.0"
+    "validator": "^13.12.0"
   }
 }

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 const userTeacherSchema = new mongoose.Schema(
   {
@@ -61,6 +62,10 @@ const userTeacherSchema = new mongoose.Schema(
         },
         message: 'Teacher should be assigned at least for 1 class',
       },
+    },
+    image: {
+      type: String,
+      default: '',
     },
   },
   {

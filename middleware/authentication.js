@@ -9,11 +9,11 @@ const authenticaiton = (req, res, next) => {
   console.log('DIFFRENECE HERE ');
   console.log(tokenCookie);
 
-  if (!token) {
+  if (!tokenCookie) {
     return unauthenticatedError('authentication Invalid');
   }
 
-  const payload = isTokenValid({ token });
+  const payload = isTokenValid({ tokenCookie });
   if (!payload) {
     return unauthenticatedError('authentication Invalid');
   }

@@ -10,6 +10,9 @@ const createJwt = ({ payload }) => {
 };
 
 const isTokenValid = ({ token }) => {
+  console.log('TOOKEN HERE');
+  console.log(token);
+
   const value = jwt.verify(token, process.env.JWT_SECRET);
 
   return value;

@@ -10,12 +10,12 @@ const authenticaiton = (req, res, next) => {
   console.log(tokenCookie);
 
   if (!tokenCookie) {
-    return unauthenticatedError('authentication Invalid');
+    return unauthenticatedError(res, 'authentication Invalid');
   }
 
   const payload = isTokenValid({ tokenCookie });
   if (!payload) {
-    return unauthenticatedError('authentication Invalid');
+    return unauthenticatedError(res, 'authentication Invalid');
   }
 
   const { name, userId, role } = payload;
@@ -32,7 +32,7 @@ const authrizePermistion = (...roles) => {
 
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      return unauthrizedError('authriezation denied');
+      return unauthrizedError(res, 'authriezation denied');
     }
 
     next();

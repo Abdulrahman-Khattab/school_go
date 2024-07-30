@@ -9,11 +9,11 @@ const createJwt = ({ payload }) => {
   return userToken;
 };
 
-const isTokenValid = ({ token }) => {
+const isTokenValid = ({ tokenCookie }) => {
   console.log('TOOKEN HERE');
-  console.log(token);
+  console.log(tokenCookie);
 
-  const value = jwt.verify(token, process.env.JWT_SECRET);
+  const value = jwt.verify(tokenCookie, process.env.JWT_SECRET);
 
   return value;
 };

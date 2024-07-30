@@ -3,6 +3,15 @@ const validator = require('validator');
 
 const userStudentSchema = new monggose.Schema(
   {
+    age: {
+      type: String,
+      required: [true, 'please provide student age'],
+    },
+    phoneNumber: {
+      type: Number,
+      required: [true, 'please provide student age'],
+    },
+
     name: {
       type: String,
       required: [true, 'please provide user name'],

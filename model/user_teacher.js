@@ -66,6 +66,11 @@ const userTeacherSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+
+    phoneNumber: {
+      type: Number,
+      required: [true, 'please provide student age'],
+    },
   },
   {
     timestamps: true,

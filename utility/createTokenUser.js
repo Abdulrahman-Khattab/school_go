@@ -18,6 +18,11 @@ const createUserToken = (user) => {
   if (!user.email) {
     user.email = '';
   }
+
+  if (!user.phoneNumber || user.phoneNumber == 0 || user.phoneNumber == null) {
+    user.phoneNumber = '';
+  }
+
   return {
     name: user.name,
     role: user.role,
@@ -28,6 +33,8 @@ const createUserToken = (user) => {
     classType: user.classType,
     student_parents: user.student_parents,
     teacherClasses: user.teacherClasses,
+    email: user.email,
+    phoneNumber: user.phoneNumber,
   };
 };
 

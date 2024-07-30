@@ -42,6 +42,10 @@ const userControllerSchema = new monggose.Schema(
       type: String,
       default: '',
     },
+    phoneNumber: {
+      type: String,
+      default: '',
+    },
   },
   {
     timestamps: true,

@@ -41,7 +41,7 @@ const userStudentSchema = new monggose.Schema(
       default: 'student',
     },
 
-    classNames: {
+    className: {
       type: String,
       required: [true, 'please provide student class Name'],
     },

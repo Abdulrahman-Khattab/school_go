@@ -106,6 +106,9 @@ const deleteControllerAccount = async (req, res) => {
 const login = async (req, res) => {
   const { username, password } = req.body;
 
+  console.log(req.headers);
+  console.log(req.body);
+
   if (!username) {
     return badRequestError(res, 'Please provide username');
   }

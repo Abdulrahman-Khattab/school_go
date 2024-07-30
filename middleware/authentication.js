@@ -3,6 +3,11 @@ const { unauthenticatedError, unauthrizedError } = require('../errors_2');
 
 const authenticaiton = (req, res, next) => {
   const token = req.signedCookies.token;
+  const tokenCookie = req.headers.cookie;
+
+  console.log(token);
+  console.log('DIFFRENECE HERE ');
+  console.log(tokenCookie);
 
   if (!token) {
     return unauthenticatedError('authentication Invalid');

@@ -18,6 +18,7 @@ const {
 } = require('../Controllers/users');
 
 const express = require('express');
+const { authenticaiton } = require('../middleware/authentication');
 const Router = express.Router();
 
 //============================
@@ -42,7 +43,7 @@ Router.patch('/teacher/:id', updateTeacher);
 //CONTROLLER Routes
 //============================
 
-Router.post('/controller', login);
+Router.post('/controller', authenticaiton, login);
 Router.post('/controller/student', createStudentAccount);
 Router.post('/controller/teacher', createTeacherAccount);
 Router.post('/controller/controller', createControllerAccount);

@@ -9,7 +9,7 @@ const userStudentSchema = new monggose.Schema(
     },
     phoneNumber: {
       type: Number,
-      required: [true, 'please provide student age'],
+      required: [true, 'please provide student phoneNumber'],
     },
 
     name: {

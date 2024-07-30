@@ -73,16 +73,16 @@ const createTeacherAccount = async (req, res) => {
 };
 
 const createControllerAccount = async (req, res) => {
-  const { name, userName, email, password } = req.body;
+  const { name, username, email, password } = req.body;
 
   if (!name) {
-    return badRequestError('please provide name ');
+    return badRequestError(res, 'please provide name ');
   }
-  if (!userName) {
-    return badRequestError('please provide userName ');
+  if (!username) {
+    return badRequestError(res, 'please provide username ');
   }
   if (!password) {
-    return badRequestError('please provide password ');
+    return badRequestError(res, 'please provide password ');
   }
 
   const user = await CONTROLLER_SCHEMA.create({
@@ -96,18 +96,18 @@ const createControllerAccount = async (req, res) => {
 };
 
 const updateControllerAccount = async (req, res) => {
-  res.send('hello update Account controller');
+  res.send(res, 'hello update Account controller');
 };
 
 const deleteControllerAccount = async (req, res) => {
-  res.send('hello delete controllerAccount');
+  res.send(res, 'hello delete controllerAccount');
 };
 
 const login = async (req, res) => {
-  const { userName, password } = req.body;
+  const { username, password } = req.body;
 
-  if (!userName) {
-    return badRequestError(res, 'Please provide userName');
+  if (!username) {
+    return badRequestError(res, 'Please provide username');
   }
 
   if (!password) {
@@ -116,13 +116,13 @@ const login = async (req, res) => {
 
   let user = null;
 
-  user = await CONTROLLER_SCHEMA.findOne({ userName });
+  user = await CONTROLLER_SCHEMA.findOne({ username });
   if (!user) {
-    user = await TEACHER_SCHEMA.findOne({ userName });
+    user = await TEACHER_SCHEMA.findOne({ username });
   }
 
   if (!user) {
-    user = await STUDENT_SCHEMA.findOne({ userName });
+    user = await STUDENT_SCHEMA.findOne({ username });
   }
 
   if (!user) {

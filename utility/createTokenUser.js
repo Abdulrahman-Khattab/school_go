@@ -27,7 +27,7 @@ const createUserToken = (user) => {
     name: user.name,
     role: user.role,
     userId: user._id,
-    userName: user.userName,
+    username: user.username,
     image: user.image,
     className: user.className,
     classType: user.classType,

@@ -2,25 +2,18 @@ const { isTokenValid } = require('../utility/jwt');
 const { unauthenticatedError, unauthrizedError } = require('../errors_2');
 
 const authenticaiton = (req, res, next) => {
-  const token = req.signedCookies.token;
-  const tokenCookie = req.headers.cookie;
+  const token = req.headers.token;
 
   console.log(token);
-  console.log('DIFFRENECE HERE ');
-  console.log(tokenCookie);
+  console.log('we are here');
 
-  if (!tokenCookie) {
+  if (!token) {
     return unauthenticatedError(res, 'authentication Invalid');
   }
 
-  const payload = isTokenValid({ tokenCookie });
-  if (!payload) {
-    return unauthenticatedError(res, 'authentication Invalid');
-  }
+  const { username, userId, role } = token;
 
-  const { name, userId, role } = payload;
-
-  const user = { name, userId, role };
+  const user = { username, userId, role };
 
   req.user = user;
 

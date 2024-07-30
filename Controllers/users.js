@@ -91,7 +91,6 @@ const createControllerAccount = async (req, res) => {
 
   const token = createUserToken(user);
 
-  attachCookieToResponse({ res, user: token });
   res.json({ data: token, msg: '' });
 };
 
@@ -139,8 +138,6 @@ const login = async (req, res) => {
   }
 
   const token = createUserToken(user);
-
-  attachCookieToResponse({ res, user: token });
 
   res.json({ data: token, msg: '' });
 };

@@ -6,10 +6,11 @@ const {
 } = require('../Controllers/school_post');
 
 const express = require('express');
+const { authenticaiton } = require('../middleware/authentication');
 
 const Router = express.Router();
 
-Router.get('/', getAllSchoolPost);
+Router.get('/', authenticaiton, getAllSchoolPost);
 Router.get('/:id', getSingleSchoolPost);
 Router.post('/', createSchoolPost);
 Router.delete('/:id', deleteSchoolPost);

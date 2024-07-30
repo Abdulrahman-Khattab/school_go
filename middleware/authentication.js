@@ -1,4 +1,4 @@
-const { isTokenValid } = require('../utils');
+const { isTokenValid } = require('../utility/jwt');
 const { unauthenticatedError, unauthrizedError } = require('../errors_2');
 
 const authenticaiton = (req, res, next) => {

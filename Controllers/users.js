@@ -2,6 +2,16 @@ const STUDENT_SCHEMA = require('../model/user_students');
 const TEACHER_SCHEMA = require('../model/user_teacher');
 const CONTROLLER_SCHEMA = require('../model/user_controller');
 
+const {
+  badRequestError,
+  notFoundError,
+  unauthenticatedError,
+  unauthrizedError,
+} = require('../errors_2');
+
+const { attachCookieToResponse } = require('../utility/jwt');
+const createUserToken = require('../utility/createTokenUser');
+
 //============================
 //STUDENTS FUNCTIONS
 //============================
@@ -63,7 +73,26 @@ const createTeacherAccount = async (req, res) => {
 };
 
 const createControllerAccount = async (req, res) => {
-  res.send('hello create Account controller');
+  const { name, userName, email, password } = req.body;
+
+  if (!name) {
+    return badRequestError('please provide name ');
+  }
+  if (!userName) {
+    return badRequestError('please provide userName ');
+  }
+  if (!password) {
+    return badRequestError('please provide password ');
+  }
+
+  const user = await CONTROLLER_SCHEMA.create({
+    ...req.body,
+  });
+
+  const token = createUserToken(user);
+
+  attachCookieToResponse({ res, user: token });
+  res.json({ data: token, msg: '' });
 };
 
 const updateControllerAccount = async (req, res) => {
@@ -75,7 +104,42 @@ const deleteControllerAccount = async (req, res) => {
 };
 
 const login = async (req, res) => {
-  res.send('hello login');
+  const { userName, password } = req.body;
+
+  if (!userName) {
+    return badRequestError(res, 'Please provide userName');
+  }
+
+  if (!password) {
+    return badRequestError(res, 'please provide password');
+  }
+
+  let user = null;
+
+  user = await CONTROLLER_SCHEMA.findOne({ userName });
+  if (!user) {
+    user = await TEACHER_SCHEMA.findOne({ userName });
+  }
+
+  if (!user) {
+    user = await STUDENT_SCHEMA.findOne({ userName });
+  }
+
+  if (!user) {
+    return notFoundError(res, 'This user does not exist');
+  }
+
+  const isPasswordcorrect = await user.comparePassword(password);
+
+  if (!isPasswordcorrect) {
+    return unauthenticatedError(res, 'please provide correct password ');
+  }
+
+  const token = createUserToken(user);
+
+  attachCookieToResponse({ res, user: token });
+
+  res.json({ data: token, msg: '' });
 };
 
 module.exports = {

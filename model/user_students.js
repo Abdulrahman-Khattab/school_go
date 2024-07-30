@@ -19,15 +19,14 @@ const userStudentSchema = new monggose.Schema(
 
     email: {
       type: String,
-      required: [true, 'please provide user email'],
       minLength: 3,
       maxLength: 45,
-      default: 'This user have no email',
-      validate: {
+      default: '',
+      /* validate: {
         validator: validator.isEmail,
         message: ' please provide valid email',
       },
-      unique: true,
+      unique: true, */
     },
 
     password: {
@@ -71,5 +70,17 @@ const userStudentSchema = new monggose.Schema(
     timestamps: true,
   }
 );
+
+userStudentSchema.pre('save', async function () {
+  // console.log(!this.isModified(this.password));
+  //if (!this.isModified(this.password)) return;
+
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+});
+
+userStudentSchema.methods.comparePassword = async function (canidate) {
+  return await bcrypt.compare(canidate, this.password);
+};
 
 module.exports = monggose.model('STUDENT_SCHEMA', userStudentSchema);

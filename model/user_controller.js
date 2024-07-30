@@ -1,5 +1,5 @@
 const monggose = require('mongoose');
-const validator = require('validator');
+const bcrypt = require('bcrypt');
 const userControllerSchema = new monggose.Schema(
   {
     name: {
@@ -18,15 +18,12 @@ const userControllerSchema = new monggose.Schema(
 
     email: {
       type: String,
-      required: [true, 'please provide user email'],
-      minLength: 3,
-      maxLength: 45,
-      default: 'This user have no email',
-      validate: {
+      default: '',
+      /* validate: {
         validator: validator.isEmail,
         message: ' please provide valid email',
-      },
-      unique: true,
+      }, */
+      // unique: true,
     },
 
     password: {
@@ -50,5 +47,17 @@ const userControllerSchema = new monggose.Schema(
     timestamps: true,
   }
 );
+
+userControllerSchema.pre('save', async function () {
+  // console.log(!this.isModified(this.password));
+  //if (!this.isModified(this.password)) return;
+
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+});
+
+userControllerSchema.methods.comparePassword = async function (canidate) {
+  return await bcrypt.compare(canidate, this.password);
+};
 
 module.exports = monggose.model('CONTROLLER_SCHEMA', userControllerSchema);

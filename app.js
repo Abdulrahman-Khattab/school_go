@@ -4,6 +4,7 @@ const connectDB = require('./db/connect');
 require('express-async-errors');
 require('dotenv');
 const fileUploader = require('express-fileupload');
+const cookieParser = require('cookie-parser');
 
 //Routers import
 const School_post_Router = require('./routes/school_post');
@@ -14,6 +15,7 @@ const user_Routers = require('./routes/users');
 const app = express();
 app.use(express.json());
 app.use(fileUploader());
+app.use(cookieParser(process.env.JWT_SECRET));
 
 // static
 app.use(express.static('public'));

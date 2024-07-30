@@ -17,11 +17,9 @@ const isTokenValid = ({ token }) => {
 
 const attachCookieToResponse = ({ res, user }) => {
   const token = createJwt({ payload: user });
-  const month = 1000 * 60 * 60 * 24 * 30;
 
   res.cookie('token', token, {
     httpOnly: true,
-    expires: new Date(Date.now() + month),
     signed: true,
   });
 };

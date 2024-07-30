@@ -9,7 +9,7 @@ const userTeacherSchema = new mongoose.Schema(
       minLength: 3,
       maxLength: 45,
     },
-    userName: {
+    username: {
       type: String,
       required: [true, 'please provide user name'],
       minLength: 3,

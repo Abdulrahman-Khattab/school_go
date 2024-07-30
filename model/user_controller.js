@@ -8,7 +8,7 @@ const userControllerSchema = new monggose.Schema(
       minLength: 3,
       maxLength: 45,
     },
-    userName: {
+    username: {
       type: String,
       required: [true, 'please provide user name'],
       minLength: 3,

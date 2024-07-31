@@ -1,10 +1,8 @@
 const {
-  getAllStudents,
   getSingleStudents,
   deleteStudent,
   updateStudent,
   studentVacationRequest,
-  getAllTeachers,
   getSingleTeachers,
   deleteTeacher,
   updateTeacher,
@@ -13,8 +11,9 @@ const {
   createTeacherAccount,
   createControllerAccount,
   updateControllerAccount,
-  deleteControllerAccount,
+  deleteAccount,
   login,
+  getAllUsers,
 } = require('../Controllers/users');
 
 const express = require('express');
@@ -24,30 +23,37 @@ const Router = express.Router();
 //============================
 //STUDENTS Routes
 //============================
-Router.get('/student/:id', getSingleStudents);
-Router.get('/student', getAllStudents);
-Router.post('/student/vacaitionRequest', studentVacationRequest);
-Router.delete('/student/:id', deleteStudent);
-Router.patch('/student/:id', updateStudent);
+Router.get('/student/:id', authenticaiton, getSingleStudents);
+Router.post(
+  '/student/vacaitionRequest',
+  authenticaiton,
+  studentVacationRequest
+);
+Router.delete('/student/:id', authenticaiton, deleteStudent);
+Router.patch('/student/:id', authenticaiton, updateStudent);
 
 //============================
 //TEACHERS Routes
 //============================
-Router.get('/teacher/:id', getSingleTeachers);
-Router.get('/teacher', getAllTeachers);
-Router.post('/teacher/vacaitionRequest', teacherVacationRequest);
-Router.delete('/teacher/:id', deleteTeacher);
-Router.patch('/teacher/:id', updateTeacher);
+Router.get('/teacher/:id', authenticaiton, getSingleTeachers);
+Router.post(
+  '/teacher/vacaitionRequest',
+  authenticaiton,
+  teacherVacationRequest
+);
+Router.delete('/teacher/:id', authenticaiton, deleteTeacher);
+Router.patch('/teacher/:id', authenticaiton, updateTeacher);
 
 //============================
 //CONTROLLER Routes
 //============================
 
 Router.post('/controller', login);
-Router.post('/controller/student', createStudentAccount);
-Router.post('/controller/teacher', createTeacherAccount);
-Router.post('/controller/controller', createControllerAccount);
-Router.patch('/controller/:id', updateControllerAccount);
-Router.delete('/controller/controller/:id', deleteControllerAccount);
+Router.post('/controller/student', authenticaiton, createStudentAccount);
+Router.post('/controller/teacher', authenticaiton, createTeacherAccount);
+Router.post('/controller/controller', authenticaiton, createControllerAccount);
+Router.patch('/controller/:id', authenticaiton, updateControllerAccount);
+Router.delete('/controller/controller/:id', authenticaiton, deleteAccount);
+Router.get('/controller/users', authenticaiton, getAllUsers);
 
 module.exports = Router;

@@ -1,11 +1,13 @@
-const { isTokenValid } = require('../utility/jwt');
+//const { isTokenValid } = require('../utility/jwt');
 const { unauthenticatedError, unauthrizedError } = require('../errors_2');
 
 const authenticaiton = (req, res, next) => {
-  const token = req.headers.token;
-
-  console.log(token);
-  console.log('we are here');
+  let token = req.headers.token;
+  if (!token) {
+    token = req.signedCookies.token;
+  }
+  //console.log(token);
+  //console.log('we are here');
 
   if (!token) {
     return unauthenticatedError(res, 'authentication Invalid');

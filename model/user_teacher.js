@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcrypt');
 
 const userTeacherSchema = new mongoose.Schema(
   {
@@ -45,11 +46,11 @@ const userTeacherSchema = new mongoose.Schema(
       type: [
         {
           className: {
-            type: 'String',
+            type: String,
             required: [true, 'please provide class name'],
           },
           classType: {
-            type: 'String',
+            type: String,
             required: [true, 'please provide class type'],
           },
         },
@@ -63,6 +64,11 @@ const userTeacherSchema = new mongoose.Schema(
       },
     },
     image: {
+      type: String,
+      default: '',
+    },
+
+    age: {
       type: String,
       default: '',
     },

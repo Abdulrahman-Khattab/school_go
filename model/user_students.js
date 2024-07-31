@@ -1,5 +1,6 @@
 const monggose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcrypt');
 
 const userStudentSchema = new monggose.Schema(
   {
@@ -28,8 +29,7 @@ const userStudentSchema = new monggose.Schema(
 
     email: {
       type: String,
-      minLength: 3,
-      maxLength: 45,
+
       default: '',
       /* validate: {
         validator: validator.isEmail,

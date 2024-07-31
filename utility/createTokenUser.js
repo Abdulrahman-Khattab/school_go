@@ -23,6 +23,10 @@ const createUserToken = (user) => {
     user.phoneNumber = '';
   }
 
+  if (!user.age) {
+    user.age = '';
+  }
+
   return {
     name: user.name,
     role: user.role,
@@ -35,6 +39,7 @@ const createUserToken = (user) => {
     teacherClasses: user.teacherClasses,
     email: user.email,
     phoneNumber: user.phoneNumber,
+    age: user.age,
   };
 };
 

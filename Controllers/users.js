@@ -416,11 +416,149 @@ const createControllerAccount = async (req, res) => {
 
 //==============================================
 
-const updateControllerAccount = async (req, res) => {
-  res.send('hello update Account controller');
+const updateAccount = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return badRequestError(res, 'please provide id');
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return badRequestError(res, 'please provide correct ID');
+  }
+
+  let updatedUser;
+
+  if (req.files) {
+    let user;
+    user = await STUDENT_SCHEMA.findOne({ _id: id });
+    if (!user) {
+      user = await TEACHER_SCHEMA.findOne({ _id: id });
+    }
+    if (!user) {
+      user = await CONTROLLER_SCHEMA.findOne({ _id: id });
+    }
+    if (!user) {
+      return notFoundError(res, 'There no such user in database');
+    }
+    //==============================
+    // DELETE OLD IMAGE
+    //==============================
+
+    if (user && user.image) {
+      // Extract the image URL from the deleted post
+      const imageUrl = user.image;
+
+      // Extract the file path from the image URL
+      const filePath = decodeURIComponent(
+        imageUrl.split('/o/')[1].split('?')[0]
+      );
+
+      try {
+        // Delete the file from Firebase Storage
+        await bucket.file(filePath).delete();
+        console.log(`Successfully deleted file: ${filePath}`);
+      } catch (error) {
+        console.error(`Failed to delete file: ${filePath}`, error);
+        return badRequestError(
+          res,
+          'Failed to delete associated image from Firebase Storage'
+        );
+      }
+    }
+    //===================================================
+    //UPDATE THE RECORD WITH NEW IMAGE
+    //===================================================
+
+    const imageValue = req.files.image;
+    const randomValue = generateRandomString(10);
+
+    if (!imageValue.mimetype.startsWith('image')) {
+      return badRequestError(res, 'please provide image');
+    }
+
+    const size = 1024 * 1024 * 5;
+    if (imageValue.size > size) {
+      return badRequestError(
+        res,
+        'please provide image that size is less than 5MB'
+      );
+    }
+
+    const imagePath = path.join(
+      __dirname,
+      `../public/usersImage/`,
+      `${imageValue.name}`
+    );
+    await imageValue.mv(imagePath);
+
+    const downloadToken = uuidv4(); // Generate a unique token
+    try {
+      const metadata = {
+        metadata: {
+          firebaseStorageDownloadTokens: downloadToken,
+        },
+        contentType: imageValue.mimetype,
+      };
+
+      await bucket.upload(imagePath, {
+        destination: `public/usersImage/${randomValue + imageValue.name}`,
+        metadata: metadata,
+      });
+
+      const file = bucket.file(
+        `public/usersImage/${randomValue + imageValue.name}`
+      );
+      const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${
+        bucket.name
+      }/o/${encodeURIComponent(file.name)}?alt=media&token=${downloadToken}`;
+
+      req.body.image = imageUrl;
+    } catch (error) {
+      console.error(error);
+      return badRequestError(res, 'Failed to upload image to Firebase Storage');
+    } finally {
+      fs.unlinkSync(imagePath); // Remove the image from local storage after uploading
+    }
+  }
+  updatedUser = await STUDENT_SCHEMA.findOneAndUpdate(
+    { _id: id },
+    { ...req.body },
+    {
+      runValidators: true,
+      new: true,
+    }
+  );
+
+  if (!updatedUser) {
+    updatedUser = await TEACHER_SCHEMA.findOneAndUpdate(
+      { _id: id },
+      { ...req.body },
+      {
+        runValidators: true,
+        new: true,
+      }
+    );
+  }
+
+  if (!updatedUser) {
+    updatedUser = await CONTROLLER_SCHEMA.findOneAndUpdate(
+      { _id: id },
+      { ...req.body },
+      {
+        runValidators: true,
+        new: true,
+      }
+    );
+  }
+
+  if (!updatedUser) {
+    return badRequestError(res, 'there no such user in database to be updated');
+  }
+
+  res.json({ data: updatedUser, msg: '' });
 };
 //==============================================
-
 const deleteAccount = async (req, res) => {
   const { id } = req.params;
 
@@ -443,6 +581,24 @@ const deleteAccount = async (req, res) => {
   }
   if (!deletedUser) {
     return notFoundError(res, 'There no such user in database');
+  }
+
+  // Extract the image URL from the deleted post
+  const imageUrl = deletedUser.image;
+
+  // Extract the file path from the image URL
+  const filePath = decodeURIComponent(imageUrl.split('/o/')[1].split('?')[0]);
+
+  try {
+    // Delete the file from Firebase Storage
+    await bucket.file(filePath).delete();
+    console.log(`Successfully deleted file: ${filePath}`);
+  } catch (error) {
+    console.error(`Failed to delete file: ${filePath}`, error);
+    return badRequestError(
+      res,
+      'Failed to delete associated image from Firebase Storage'
+    );
   }
 
   res.json({ data: deletedUser, msg: '' });
@@ -501,7 +657,7 @@ module.exports = {
   createStudentAccount,
   createTeacherAccount,
   createControllerAccount,
-  updateControllerAccount,
+  updateAccount,
   deleteAccount,
   login,
   getAllUsers,

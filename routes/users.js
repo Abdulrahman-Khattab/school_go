@@ -10,7 +10,7 @@ const {
   createStudentAccount,
   createTeacherAccount,
   createControllerAccount,
-  updateControllerAccount,
+  updateAccount,
   deleteAccount,
   login,
   getAllUsers,
@@ -52,7 +52,7 @@ Router.post('/controller', login);
 Router.post('/controller/student', authenticaiton, createStudentAccount);
 Router.post('/controller/teacher', authenticaiton, createTeacherAccount);
 Router.post('/controller/controller', authenticaiton, createControllerAccount);
-Router.patch('/controller/:id', authenticaiton, updateControllerAccount);
+Router.patch('/controller/:id', authenticaiton, updateAccount);
 Router.delete('/controller/controller/:id', authenticaiton, deleteAccount);
 Router.get('/controller/users', authenticaiton, getAllUsers);
 

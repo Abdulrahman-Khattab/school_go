@@ -7,6 +7,7 @@ const {
   deleteAccount,
   login,
   getAllUsers,
+  getWeeklyVacationRequest,
 } = require('../Controllers/users');
 
 const express = require('express');
@@ -30,5 +31,6 @@ Router.post('/controller/controller', authenticaiton, createControllerAccount);
 Router.patch('/controller/:id', authenticaiton, updateAccount);
 Router.delete('/controller/controller/:id', authenticaiton, deleteAccount);
 Router.get('/controller/users', authenticaiton, getAllUsers);
+Router.get('/controller/vacations', authenticaiton, getWeeklyVacationRequest);
 
 module.exports = Router;

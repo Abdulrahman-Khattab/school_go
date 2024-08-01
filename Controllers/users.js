@@ -70,8 +70,10 @@ const login = async (req, res) => {
   }
 
   let user;
+  let userVacations;
 
   user = await CONTROLLER_SCHEMA.findOne({ username });
+
   if (!user) {
     user = await TEACHER_SCHEMA.findOne({ username });
   }
@@ -91,7 +93,11 @@ const login = async (req, res) => {
     return unauthenticatedError(res, 'please provide correct password ');
   }
 
-  const token = createUserToken(user);
+  userVacations = await VACATION_SCHEMA.find({
+    senderUsername: user.username,
+  });
+
+  const token = createUserToken({ ...user._doc, vacations: userVacations });
 
   attachCookieToResponse({ res, user: token });
 
@@ -159,6 +165,29 @@ const getAllUsers = async (req, res) => {
   }
 
   res.json({ data, msg: '', authenticatedUser: res.locals.user });
+};
+//======================================================
+const getWeeklyVacationRequest = async (req, res) => {
+  const now = new Date();
+  const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const endOfWeek = new Date(now.setDate(startOfWeek.getDate() + 6));
+  endOfWeek.setHours(23, 59, 59, 999);
+
+  const weekVacations = await VACATION_SCHEMA.find({
+    createdAt: { $gte: startOfWeek, $lt: endOfWeek },
+  });
+
+  if (!weekVacations) {
+    return notFoundError(res, 'there is no vacation request for today');
+  }
+
+  res.json({
+    data: weekVacations,
+    msg: '',
+    authenticatedUser: res.locals.user,
+  });
 };
 
 //==============================================
@@ -654,7 +683,7 @@ const deleteAccount = async (req, res) => {
 
 module.exports = {
   vacationRequest,
-
+  getWeeklyVacationRequest,
   createStudentAccount,
   createTeacherAccount,
   createControllerAccount,

@@ -7,6 +7,7 @@ const {
 const STUDENT_SCHEMA = require('../model/user_students');
 const TEACHER_SCHEMA = require('../model/user_teacher');
 const CONTROLLER_SCHEMA = require('../model/user_controller');
+const createUserToken = require('../utility/createTokenUser');
 
 const authenticaiton = async (req, res, next) => {
   let token = req.headers.token;
@@ -47,7 +48,8 @@ const authenticaiton = async (req, res, next) => {
   // Add the state property to validUser
 
   validUser.state = state;
-  res.locals.user = validUser;
+  const newToken = createUserToken(validUser);
+  res.locals.user = newToken;
 
   //console.log(validUser);
 

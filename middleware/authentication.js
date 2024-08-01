@@ -10,7 +10,9 @@ const CONTROLLER_SCHEMA = require('../model/user_controller');
 
 const authenticaiton = async (req, res, next) => {
   let token = req.headers.token;
-  token = JSON.parse(token);
+  if (token) {
+    token = JSON.parse(token);
+  }
   if (!token) {
     token = req.signedCookies.token;
   }

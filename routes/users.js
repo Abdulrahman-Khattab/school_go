@@ -8,6 +8,7 @@ const {
   login,
   getAllUsers,
   getWeeklyVacationRequest,
+  checkUserInfo,
 } = require('../Controllers/users');
 
 const express = require('express');
@@ -20,6 +21,7 @@ const Router = express.Router();
 
 Router.post('/vacaitionRequest', authenticaiton, vacationRequest);
 Router.post('/login', login);
+Router.get('/checkUserInfo', authenticaiton, checkUserInfo);
 
 //============================
 //CONTROLLER Routes

@@ -56,6 +56,10 @@ const vacationRequest = async (req, res) => {
   res.json({ data: vacation, msg: '' });
 };
 
+const checkUserInfo = async (req, res) => {
+  res.json({ data: res.locals.user, msg: '' });
+};
+
 //==============================================
 
 const login = async (req, res) => {
@@ -691,4 +695,5 @@ module.exports = {
   deleteAccount,
   login,
   getAllUsers,
+  checkUserInfo,
 };

@@ -13,8 +13,8 @@ const authenticaiton = async (req, res, next) => {
   if (!token) {
     token = req.signedCookies.token;
   }
-  //console.log(token);
-  //console.log('we are here');
+  console.log(token);
+  console.log('we are here');
 
   if (!token) {
     return unauthenticatedError(res, 'authentication Invalid');

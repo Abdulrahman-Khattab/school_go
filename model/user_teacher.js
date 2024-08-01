@@ -77,6 +77,10 @@ const userTeacherSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'please provide student phoneNumber'],
     },
+    state: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

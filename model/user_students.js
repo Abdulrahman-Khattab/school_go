@@ -74,6 +74,10 @@ const userStudentSchema = new monggose.Schema(
       type: String,
       default: '',
     },
+    state: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

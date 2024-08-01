@@ -22,6 +22,8 @@ const authenticaiton = async (req, res, next) => {
 
   const { username, userId, role } = token;
 
+  console.log(userId);
+
   let validUser = await STUDENT_SCHEMA.findOne({ _id: userId });
   if (!validUser) {
     validUser = await TEACHER_SCHEMA.findOne({ _id: userId });
@@ -35,9 +37,18 @@ const authenticaiton = async (req, res, next) => {
     return notFoundError(res, 'This user does not exist ');
   }
 
+  let state = false;
+
+  state = validUser._id != userId || validUser.username != username;
+
+  // Add the state property to validUser
+
+  validUser.state = state;
   res.locals.user = validUser;
 
-  const user = { username, userId, role };
+  //console.log(validUser);
+
+  const user = { username, userId, role, name: validUser.name };
 
   req.user = user;
 

@@ -1,12 +1,5 @@
 const {
-  getSingleStudents,
-  deleteStudent,
-  updateStudent,
-  studentVacationRequest,
-  getSingleTeachers,
-  deleteTeacher,
-  updateTeacher,
-  teacherVacationRequest,
+  vacationRequest,
   createStudentAccount,
   createTeacherAccount,
   createControllerAccount,
@@ -21,34 +14,16 @@ const { authenticaiton } = require('../middleware/authentication');
 const Router = express.Router();
 
 //============================
-//STUDENTS Routes
+//GENERAL ROUTES
 //============================
-Router.get('/student/:id', authenticaiton, getSingleStudents);
-Router.post(
-  '/student/vacaitionRequest',
-  authenticaiton,
-  studentVacationRequest
-);
-Router.delete('/student/:id', authenticaiton, deleteStudent);
-Router.patch('/student/:id', authenticaiton, updateStudent);
 
-//============================
-//TEACHERS Routes
-//============================
-Router.get('/teacher/:id', authenticaiton, getSingleTeachers);
-Router.post(
-  '/teacher/vacaitionRequest',
-  authenticaiton,
-  teacherVacationRequest
-);
-Router.delete('/teacher/:id', authenticaiton, deleteTeacher);
-Router.patch('/teacher/:id', authenticaiton, updateTeacher);
+Router.post('/vacaitionRequest', authenticaiton, vacationRequest);
+Router.post('/login', login);
 
 //============================
 //CONTROLLER Routes
 //============================
 
-Router.post('/controller', login);
 Router.post('/controller/student', authenticaiton, createStudentAccount);
 Router.post('/controller/teacher', authenticaiton, createTeacherAccount);
 Router.post('/controller/controller', authenticaiton, createControllerAccount);

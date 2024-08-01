@@ -1,6 +1,7 @@
 const STUDENT_SCHEMA = require('../model/user_students');
 const TEACHER_SCHEMA = require('../model/user_teacher');
 const CONTROLLER_SCHEMA = require('../model/user_controller');
+const VACATION_SCHEMA = require('../model/vaction');
 const mongoose = require('mongoose');
 const path = require('path');
 const fs = require('fs');
@@ -34,54 +35,70 @@ const { attachCookieToResponse } = require('../utility/jwt');
 const createUserToken = require('../utility/createTokenUser');
 
 //============================
-//STUDENTS FUNCTIONS
+//GENERAL FUNCTION
 //============================
 
 //==============================================
 
-const getSingleStudents = async (req, res) => {
-  res.send('hello single  student');
-};
-//==============================================
+const vacationRequest = async (req, res) => {
+  req.body.senderId = req.user.userId;
+  req.body.senderRole = req.user.role;
+  req.body.senderUsername = req.user.username;
+  req.body.senderName = req.user.name;
+  const { senderDescription } = req.body;
 
-const deleteStudent = async (req, res) => {
-  res.send('hello deleteStudents  student');
-};
-//==============================================
+  if (!senderDescription) {
+    return badRequestError(res, 'please provide sender description');
+  }
 
-const updateStudent = async (req, res) => {
-  res.send('hello updateStudent  student');
-};
-//==============================================
+  const vacation = await VACATION_SCHEMA.create({ ...req.body });
 
-const studentVacationRequest = async (req, res) => {
-  res.send('hello vacation request student');
+  res.json({ data: vacation, msg: '' });
 };
-
-//============================
-//TEACHERS FUNCTIONS
-//============================
 
 //==============================================
 
-const getSingleTeachers = async (req, res) => {
-  res.send('hello single  Teacher');
-};
-//==============================================
+const login = async (req, res) => {
+  const { username, password } = req.body;
 
-const deleteTeacher = async (req, res) => {
-  res.send('hello deleteTeachers  Teacher');
-};
-//==============================================
+  if (!username) {
+    return badRequestError(res, 'Please provide username');
+  }
 
-const updateTeacher = async (req, res) => {
-  res.send('hello updateTeacher  Teacher');
-};
-//==============================================
+  if (!password) {
+    return badRequestError(res, 'please provide password');
+  }
 
-const teacherVacationRequest = async (req, res) => {
-  res.send('hello vacation request Teacher');
+  let user;
+
+  user = await CONTROLLER_SCHEMA.findOne({ username });
+  if (!user) {
+    user = await TEACHER_SCHEMA.findOne({ username });
+  }
+
+  if (!user) {
+    user = await STUDENT_SCHEMA.findOne({ username });
+    console.log(user);
+  }
+
+  if (!user) {
+    return notFoundError(res, 'This user does not exist');
+  }
+
+  const isPasswordcorrect = await user.comparePassword(password);
+
+  if (!isPasswordcorrect) {
+    return unauthenticatedError(res, 'please provide correct password ');
+  }
+
+  const token = createUserToken(user);
+
+  attachCookieToResponse({ res, user: token });
+
+  res.json({ data: token, msg: '', authenticatedUser: res.locals.user });
 };
+
+//==============================================
 
 //============================
 //CONTROLERS FUNCTIONS
@@ -90,21 +107,48 @@ const getAllUsers = async (req, res) => {
   const data = {};
 
   const students = await STUDENT_SCHEMA.find({});
+  const studentVacations = await VACATION_SCHEMA.find({
+    senderRole: 'student',
+  });
 
   if (students) {
-    data.students = students;
+    //data.students = students;
+
+    data.students = students.map((student) => ({
+      ...student._doc,
+      vacations: studentVacations.filter((vacation) =>
+        vacation.senderId.equals(student._id)
+      ),
+    }));
   }
 
   const teachers = await TEACHER_SCHEMA.find({});
-
+  const teacherVacations = await VACATION_SCHEMA.find({
+    senderRole: 'teacher',
+  });
   if (teachers) {
-    data.teachers = teachers;
+    // data.teachers = teachers;
+
+    data.teachers = teachers.map((teacher) => ({
+      ...teachers._doc,
+      vacations: teacherVacations.filter((vacation) =>
+        vacation.senderId.equals(teacher._id)
+      ),
+    }));
   }
 
   const controllers = await CONTROLLER_SCHEMA.find({});
+  const controllerVacations = await VACATION_SCHEMA.find({
+    senderRole: 'controller',
+  });
 
   if (controllers) {
-    data.controllers = controllers;
+    data.controllers = controllers.map((controller) => ({
+      ...controller._doc,
+      vacations: controllerVacations.filter((vaction) =>
+        vaction.senderId.equals(controller._id)
+      ),
+    }));
   }
 
   if (!data) {
@@ -556,6 +600,10 @@ const updateAccount = async (req, res) => {
     return badRequestError(res, 'there no such user in database to be updated');
   }
 
+  const token = createUserToken(updatedUser);
+
+  attachCookieToResponse({ res, user: token });
+
   res.json({ data: updatedUser, msg: '', authenticatedUser: res.locals.user });
 };
 //==============================================
@@ -604,56 +652,9 @@ const deleteAccount = async (req, res) => {
   res.json({ data: deletedUser, msg: '', authenticatedUser: res.locals.user });
 };
 
-//==============================================
-
-const login = async (req, res) => {
-  const { username, password } = req.body;
-
-  if (!username) {
-    return badRequestError(res, 'Please provide username');
-  }
-
-  if (!password) {
-    return badRequestError(res, 'please provide password');
-  }
-
-  let user = null;
-
-  user = await CONTROLLER_SCHEMA.findOne({ username });
-  if (!user) {
-    user = await TEACHER_SCHEMA.findOne({ username });
-  }
-
-  if (!user) {
-    user = await STUDENT_SCHEMA.findOne({ username });
-  }
-
-  if (!user) {
-    return notFoundError(res, 'This user does not exist');
-  }
-
-  const isPasswordcorrect = await user.comparePassword(password);
-
-  if (!isPasswordcorrect) {
-    return unauthenticatedError(res, 'please provide correct password ');
-  }
-
-  const token = createUserToken(user);
-
-  attachCookieToResponse({ res, user: token });
-
-  res.json({ data: token, msg: '', authenticatedUser: res.locals.user });
-};
-
 module.exports = {
-  getSingleStudents,
-  deleteStudent,
-  updateStudent,
-  studentVacationRequest,
-  getSingleTeachers,
-  deleteTeacher,
-  updateTeacher,
-  teacherVacationRequest,
+  vacationRequest,
+
   createStudentAccount,
   createTeacherAccount,
   createControllerAccount,

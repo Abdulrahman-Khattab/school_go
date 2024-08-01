@@ -32,7 +32,9 @@ const createSchoolPost = async (req, res) => {
 
   if (!req.files) {
     const school_post = await School_post.create({ description });
-    return res.status(StatusCodes.ACCEPTED).json({ data: school_post });
+    return res
+      .status(StatusCodes.ACCEPTED)
+      .json({ data: school_post, authenticatedUser: res.locals.user });
   }
 
   const imageValue = req.files.image;
@@ -80,7 +82,11 @@ const createSchoolPost = async (req, res) => {
       image: imageUrl,
     });
 
-    res.json({ data: school_post, msg: '' });
+    res.json({
+      data: school_post,
+      msg: '',
+      authenticatedUser: res.locals.user,
+    });
   } catch (error) {
     console.error(error);
     return badRequestError(res, 'Failed to upload image to Firebase Storage');
@@ -96,7 +102,9 @@ const getAllSchoolPost = async (req, res) => {
     return notFoundError(res, 'there is not post in your database');
   }
 
-  res.status(StatusCodes.ACCEPTED).json({ data: school_post, msg: '' });
+  res
+    .status(StatusCodes.ACCEPTED)
+    .json({ data: school_post, msg: '', authenticatedUser: res.locals.user });
 };
 
 const getSingleSchoolPost = async (req, res) => {
@@ -118,6 +126,7 @@ const getSingleSchoolPost = async (req, res) => {
   res.status(StatusCodes.OK).json({
     data: single_school_post,
     msg: '',
+    authenticatedUser: res.locals.user,
   });
 };
 
@@ -137,6 +146,7 @@ const deleteSchoolPost = async (req, res) => {
     return res.status(StatusCodes.ACCEPTED).json({
       data: deleted_school_post_no_image,
       msg: '',
+      authenticatedUser: res.locals.user,
     });
   }
 
@@ -169,6 +179,7 @@ const deleteSchoolPost = async (req, res) => {
   res.status(StatusCodes.ACCEPTED).json({
     data: deleted_school_post,
     msg: '',
+    authenticatedUser: res.locals.user,
   });
 };
 

@@ -114,7 +114,7 @@ const getAllUsers = async (req, res) => {
     );
   }
 
-  res.json({ data, msg: '' });
+  res.json({ data, msg: '', authenticatedUser: res.locals.user });
 };
 
 //==============================================
@@ -213,7 +213,7 @@ const createStudentAccount = async (req, res) => {
 
       attachCookieToResponse({ res, user: token });
 
-      res.json({ data: token, msg: '' });
+      res.json({ data: token, msg: '', authenticatedUser: res.locals.user });
     } catch (error) {
       console.error(error);
       return badRequestError(res, 'Failed to upload image to Firebase Storage');
@@ -228,7 +228,7 @@ const createStudentAccount = async (req, res) => {
 
   attachCookieToResponse({ res, user: token });
 
-  res.json({ data: token, msg: '' });
+  res.json({ data: token, msg: '', authenticatedUser: res.locals.user });
 };
 //==============================================
 
@@ -309,7 +309,7 @@ const createTeacherAccount = async (req, res) => {
 
       attachCookieToResponse({ res, user: token });
 
-      res.json({ data: token, msg: '' });
+      res.json({ data: token, msg: '', authenticatedUser: res.locals.user });
     } catch (error) {
       console.error(error);
       return badRequestError(res, 'Failed to upload image to Firebase Storage');
@@ -323,7 +323,7 @@ const createTeacherAccount = async (req, res) => {
   const token = createUserToken(user);
   attachCookieToResponse({ res, user: token });
 
-  res.json({ data: token, msg: '' });
+  res.json({ data: token, msg: '', authenticatedUser: res.locals.user });
 };
 //==============================================
 
@@ -394,7 +394,7 @@ const createControllerAccount = async (req, res) => {
 
       attachCookieToResponse({ res, user: token });
 
-      res.json({ data: token, msg: '' });
+      res.json({ data: token, msg: '', authenticatedUser: res.locals.user });
     } catch (error) {
       console.error(error);
       return badRequestError(res, 'Failed to upload image to Firebase Storage');
@@ -411,7 +411,7 @@ const createControllerAccount = async (req, res) => {
 
   attachCookieToResponse({ res, user: token });
 
-  res.json({ data: token, msg: '' });
+  res.json({ data: token, msg: '', authenticatedUser: res.locals.user });
 };
 
 //==============================================
@@ -556,7 +556,7 @@ const updateAccount = async (req, res) => {
     return badRequestError(res, 'there no such user in database to be updated');
   }
 
-  res.json({ data: updatedUser, msg: '' });
+  res.json({ data: updatedUser, msg: '', authenticatedUser: res.locals.user });
 };
 //==============================================
 const deleteAccount = async (req, res) => {
@@ -601,7 +601,7 @@ const deleteAccount = async (req, res) => {
     );
   }
 
-  res.json({ data: deletedUser, msg: '' });
+  res.json({ data: deletedUser, msg: '', authenticatedUser: res.locals.user });
 };
 
 //==============================================
@@ -642,7 +642,7 @@ const login = async (req, res) => {
 
   attachCookieToResponse({ res, user: token });
 
-  res.json({ data: token, msg: '' });
+  res.json({ data: token, msg: '', authenticatedUser: res.locals.user });
 };
 
 module.exports = {

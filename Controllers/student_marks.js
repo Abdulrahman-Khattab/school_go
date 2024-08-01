@@ -23,6 +23,7 @@ const createStudentMarks = async (req, res) => {
   res.json({
     data: studentMarkRecord,
     msg: '',
+    authenticatedUser: res.locals.user,
   });
 };
 
@@ -50,7 +51,7 @@ const getStudentMarks = async (req, res) => {
 
   const studentsInfo = await StudentMarks.find(studentQuery);
 
-  res.json({ data: studentsInfo, msg: '' });
+  res.json({ data: studentsInfo, msg: '', authenticatedUser: res.locals.user });
 };
 
 const deleteStudentMark = async (req, res) => {
@@ -78,6 +79,7 @@ const deleteStudentMark = async (req, res) => {
   res.json({
     data: deletedSutdentGrade,
     msg: '',
+    authenticatedUser: res.locals.user,
   });
 };
 
@@ -117,9 +119,11 @@ const updateStudentMarks = async (req, res) => {
     return badRequestError(res, 'something Wrong happended please try again');
   }
 
-  res
-    .status(StatusCodes.OK)
-    .json({ data: updatedStudentGradeInformation, msg: '' });
+  res.status(StatusCodes.OK).json({
+    data: updatedStudentGradeInformation,
+    msg: '',
+    authenticatedUser: res.locals.user,
+  });
 };
 
 module.exports = {

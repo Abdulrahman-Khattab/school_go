@@ -114,4 +114,26 @@ userTeacherSchema.pre('save', function (next) {
   next();
 });
 
+userTeacherSchema.statics.isUsernameTaken = async function (username) {
+  const teacher = this;
+  const STUDENT_SCHEMA = require('./user_students');
+  const CONTROLLER_SCHEMA = require('./user_controller');
+
+  const user = await teacher.findOne({ username });
+  if (user) return true;
+  if (await CONTROLLER_SCHEMA.findOne({ username })) return true;
+  if (await STUDENT_SCHEMA.findOne({ username })) return true;
+  return false;
+};
+
+userTeacherSchema.pre('save', async function (next) {
+  const teacher = this.constructor;
+  if (await teacher.isUsernameTaken(this.username)) {
+    const err = new Error('UsernameAlreadyTakenAcrossAllSchemas');
+    next(err);
+  } else {
+    next();
+  }
+});
+
 module.exports = mongoose.model('TEACHER_SCHEMA', userTeacherSchema);

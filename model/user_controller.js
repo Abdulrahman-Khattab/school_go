@@ -1,5 +1,6 @@
 const monggose = require('mongoose');
 const bcrypt = require('bcrypt');
+
 const userControllerSchema = new monggose.Schema(
   {
     name: {
@@ -73,6 +74,27 @@ userControllerSchema.pre('save', function (next) {
   this.name = this.name.toLowerCase();
   this.username = this.username.toLowerCase();
   next();
+});
+
+userControllerSchema.statics.isUsernameTaken = async function (username) {
+  const controller = this;
+  const STUDENT_SCHEMA = require('./user_students');
+  const TEACHER_SCHEMA = require('./user_teacher');
+  const user = await controller.findOne({ username });
+  if (user) return true;
+  if (await TEACHER_SCHEMA.findOne({ username })) return true;
+  if (await STUDENT_SCHEMA.findOne({ username })) return true;
+  return false;
+};
+
+userControllerSchema.pre('save', async function (next) {
+  const controller = this.constructor;
+  if (await controller.isUsernameTaken(this.username)) {
+    const err = new Error('UsernameAlreadyTakenAcrossAllSchemas.');
+    next(err);
+  } else {
+    next();
+  }
 });
 
 module.exports = monggose.model('CONTROLLER_SCHEMA', userControllerSchema);

@@ -2,6 +2,8 @@ const monggose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
 
+const { badRequestError } = require('../errors_2');
+
 const userStudentSchema = new monggose.Schema(
   {
     age: {
@@ -106,6 +108,28 @@ userStudentSchema.pre('save', function (next) {
   }
 
   next();
+});
+
+userStudentSchema.statics.isUsernameTaken = async function (username) {
+  const Student = this;
+  const TEACHER_SCHEMA = require('./user_teacher');
+  const CONTROLLER_SCHEMA = require('./user_controller');
+
+  const user = await Student.findOne({ username });
+  if (user) return true;
+  if (await TEACHER_SCHEMA.findOne({ username })) return true;
+  if (await CONTROLLER_SCHEMA.findOne({ username })) return true;
+  return false;
+};
+
+userStudentSchema.pre('save', async function (next) {
+  const student = this.constructor;
+  if (await student.isUsernameTaken(this.username)) {
+    const err = new Error('UsernameAlreadyTakenAcrossAllSchemas');
+    next(err);
+  } else {
+    next();
+  }
 });
 
 module.exports = monggose.model('STUDENT_SCHEMA', userStudentSchema);

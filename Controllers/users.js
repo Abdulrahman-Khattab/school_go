@@ -148,7 +148,7 @@ const getAllUsers = async (req, res) => {
     // data.teachers = teachers;
 
     data.teachers = teachers.map((teacher) => ({
-      ...teachers._doc,
+      ...teacher._doc,
       vacations: teacherVacations.filter((vacation) =>
         vacation.senderId.equals(teacher._id)
       ),

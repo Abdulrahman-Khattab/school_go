@@ -27,7 +27,7 @@ const createSchoolPost = async (req, res) => {
   console.log(randomValue);
 
   if (!description) {
-    return badRequestError(res, 'please provide description');
+    return badRequestError(res, 'pleaseProvideDescription');
   }
 
   if (!req.files) {
@@ -40,15 +40,12 @@ const createSchoolPost = async (req, res) => {
   const imageValue = req.files.image;
 
   if (!imageValue.mimetype.startsWith('image')) {
-    return badRequestError(res, 'please provide image');
+    return badRequestError(res, 'pleaseProvideImage');
   }
 
   const size = 1024 * 1024 * 5;
   if (imageValue.size > size) {
-    return badRequestError(
-      res,
-      'please provide image that size is less than 5MB'
-    );
+    return badRequestError(res, 'pleaseProvideImageThatSizeIsLessThan5MB');
   }
 
   const imagePath = path.join(
@@ -89,7 +86,7 @@ const createSchoolPost = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    return badRequestError(res, 'Failed to upload image to Firebase Storage');
+    return badRequestError(res, 'FailedToUploadImageToFirebaseStorage');
   } finally {
     fs.unlinkSync(imagePath); // Remove the image from local storage after uploading
   }
@@ -99,7 +96,7 @@ const getAllSchoolPost = async (req, res) => {
   const school_post = await School_post.find({});
 
   if (!school_post) {
-    return notFoundError(res, 'there is not post in your database');
+    return notFoundError(res, 'thereIsNotPostInYourDatabase');
   }
 
   res
@@ -110,17 +107,17 @@ const getAllSchoolPost = async (req, res) => {
 const getSingleSchoolPost = async (req, res) => {
   const { id } = req.params;
   if (!id) {
-    return notFoundError(res, 'please provide ID');
+    return notFoundError(res, 'pleaseProvideID');
   }
 
   if (!monggose.Types.ObjectId.isValid(id)) {
-    return notFoundError(res, 'Please return valid id format');
+    return notFoundError(res, 'pleaseReturnValidIdFormat');
   }
 
   const single_school_post = await School_post.findOne({ _id: id });
 
   if (!single_school_post) {
-    return notFoundError(res, 'there no such post in database');
+    return notFoundError(res, 'thereNoSuchPostInDatabase');
   }
 
   res.status(StatusCodes.OK).json({
@@ -133,7 +130,7 @@ const getSingleSchoolPost = async (req, res) => {
 const deleteSchoolPost = async (req, res) => {
   const { id } = req.params;
   if (!id) {
-    return notFoundError(res, 'please provide ID');
+    return notFoundError(res, 'pleaseProvideID');
   }
 
   const school_post_no_image = await School_post.findOne({ _id: id });
@@ -155,7 +152,7 @@ const deleteSchoolPost = async (req, res) => {
   const deleted_school_post = await School_post.findOneAndDelete({ _id: id });
 
   if (!deleted_school_post) {
-    return notFoundError(res, 'there is no such post in the database');
+    return notFoundError(res, 'thereIsNoSuchPostInTheDatabase');
   }
 
   // Extract the image URL from the deleted post
@@ -172,7 +169,7 @@ const deleteSchoolPost = async (req, res) => {
     console.error(`Failed to delete file: ${filePath}`, error);
     return badRequestError(
       res,
-      'Failed to delete associated image from Firebase Storage'
+      'FailedToDeleteAssociatedImageFromFirebaseStorage'
     );
   }
 

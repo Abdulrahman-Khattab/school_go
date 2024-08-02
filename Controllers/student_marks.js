@@ -6,16 +6,16 @@ const { StatusCodes } = require('http-status-codes');
 const createStudentMarks = async (req, res) => {
   const { studentName, subjectTitle, examType, studentMark } = req.body;
   if (!studentName) {
-    return badRequestError(res, 'please provide student name ');
+    return badRequestError(res, 'pleaseProvideStudentName ');
   }
   if (!subjectTitle) {
-    return badRequestError(res, 'please provide subject title ');
+    return badRequestError(res, 'pleaseProvideSubjectTitle ');
   }
   if (!examType) {
-    return badRequestError(res, 'please provide exam type ');
+    return badRequestError(res, 'pleaseProvideExamType ');
   }
   if (!studentMark) {
-    return badRequestError(res, 'please provide student Mark ');
+    return badRequestError(res, 'pleaseProvideStudentMark ');
   }
 
   const studentMarkRecord = await StudentMarks.create({ ...req.body });
@@ -58,11 +58,11 @@ const deleteStudentMark = async (req, res) => {
   const { id } = req.params;
 
   if (!id) {
-    return badRequestError(res, 'Please provide student mark id ');
+    return badRequestError(res, 'pleaseProvideStudentMarkID ');
   }
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return notFoundError(res, 'Please return valid id format');
+    return notFoundError(res, 'pleaseReturnValidIDFormat');
   }
 
   const deletedSutdentGrade = await StudentMarks.findOneAndDelete({
@@ -72,7 +72,7 @@ const deleteStudentMark = async (req, res) => {
   if (!deletedSutdentGrade) {
     return badRequestError(
       res,
-      'This Item does not exist in database make sure you provided correct information'
+      'thisItemDoesNotExistInDatabaseMakeSureYouProvidedCorrectInformation'
     );
   }
 
@@ -88,7 +88,7 @@ const updateStudentMarks = async (req, res) => {
   const { studentName, subjectTitle, examType, studentMark } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return notFoundError(res, 'Please return valid id format');
+    return notFoundError(res, 'pleaseReturnValidIDFormat');
   }
   const studentUpdateObject = {};
 
@@ -116,7 +116,7 @@ const updateStudentMarks = async (req, res) => {
   );
 
   if (!updatedStudentGradeInformation) {
-    return badRequestError(res, 'something Wrong happended please try again');
+    return badRequestError(res, 'somethingWrongHappendedPleaseTryAgain');
   }
 
   res.status(StatusCodes.OK).json({

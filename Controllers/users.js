@@ -48,15 +48,15 @@ const vacationRequest = async (req, res) => {
   const { senderDescription, vacationStartTime, vacationEndTime } = req.body;
 
   if (!senderDescription) {
-    return badRequestError(res, 'please provide sender description');
+    return badRequestError(res, 'pleaseProvideSenderDescription');
   }
 
   if (!vacationStartTime) {
-    return badRequestError(res, 'Please provide vacation start time ');
+    return badRequestError(res, 'pleaseProvideVacationStartTime ');
   }
 
   if (!vacationEndTime) {
-    return badRequestError(res, 'Please provide vacation end time ');
+    return badRequestError(res, 'pleaseProvideVacationEndTime ');
   }
 
   const vacation = await VACATION_SCHEMA.create({ ...req.body });
@@ -74,11 +74,11 @@ const login = async (req, res) => {
   const { username, password } = req.body;
 
   if (!username) {
-    return badRequestError(res, 'Please provide username');
+    return badRequestError(res, 'pleaseProvideUsername');
   }
 
   if (!password) {
-    return badRequestError(res, 'please provide password');
+    return badRequestError(res, 'pleaseProvidePassword');
   }
 
   let user;
@@ -96,13 +96,13 @@ const login = async (req, res) => {
   }
 
   if (!user) {
-    return notFoundError(res, 'This user does not exist');
+    return notFoundError(res, 'thisUserDoesNotExist');
   }
 
   const isPasswordcorrect = await user.comparePassword(password);
 
   if (!isPasswordcorrect) {
-    return unauthenticatedError(res, 'please provide correct password ');
+    return unauthenticatedError(res, 'pleaseProvideCorrectPassword ');
   }
 
   userVacations = await VACATION_SCHEMA.find({
@@ -172,7 +172,7 @@ const getAllUsers = async (req, res) => {
   if (!data) {
     return badRequestError(
       res,
-      'there is problem in your database please reset if not worked contact the develeoper'
+      'thereIsProblemInYourDatabasePleaseResetIfNotWorkedContactTheDeveleoper'
     );
   }
 
@@ -192,7 +192,7 @@ const getWeeklyVacationRequest = async (req, res) => {
   });
 
   if (!weekVacations) {
-    return notFoundError(res, 'there is no vacation request for today');
+    return notFoundError(res, 'thereIsNoVacationRequestForToday');
   }
 
   res.json({
@@ -218,30 +218,30 @@ const createStudentAccount = async (req, res) => {
   // console.log(req.body);
 
   if (!name) {
-    return badRequestError(res, 'please provide name ');
+    return badRequestError(res, 'pleaseProvideName ');
   }
   if (!username) {
-    return badRequestError(res, 'please provide username ');
+    return badRequestError(res, 'pleaseProvideUsername ');
   }
 
   if (!password) {
-    return badRequestError(res, 'please provide password ');
+    return badRequestError(res, 'pleaseProvidePassword ');
   }
 
   if (!age) {
-    return badRequestError(res, 'please provide age ');
+    return badRequestError(res, 'pleaseProvideAge ');
   }
   if (!phoneNumber) {
-    return badRequestError(res, 'please provide phoneNumber ');
+    return badRequestError(res, 'pleaseProvidePhoneNumber ');
   }
   if (!className) {
-    return badRequestError(res, 'please provide className ');
+    return badRequestError(res, 'pleaseProvideClassName ');
   }
   if (!classType) {
-    return badRequestError(res, 'please provide classType ');
+    return badRequestError(res, 'pleaseProvideClassType ');
   }
   if (!student_parents) {
-    return badRequestError(res, 'please provide student_parents ');
+    return badRequestError(res, 'pleaseProvideStudentParents ');
   }
 
   const randomValue = generateRandomString(10);
@@ -250,15 +250,12 @@ const createStudentAccount = async (req, res) => {
     const imageValue = req.files.image;
 
     if (!imageValue.mimetype.startsWith('image')) {
-      return badRequestError(res, 'please provide image');
+      return badRequestError(res, 'pleaseProvideImage');
     }
 
     const size = 1024 * 1024 * 5;
     if (imageValue.size > size) {
-      return badRequestError(
-        res,
-        'please provide image that size is less than 5MB'
-      );
+      return badRequestError(res, 'pleaseProvideImageThatSizeIsLessThan5MB');
     }
 
     const imagePath = path.join(
@@ -301,7 +298,7 @@ const createStudentAccount = async (req, res) => {
       res.json({ data: token, msg: '', authenticatedUser: res.locals.user });
     } catch (error) {
       console.error(error);
-      return badRequestError(res, 'Failed to upload image to Firebase Storage');
+      return badRequestError(res, 'failedToUploadImageToFirebaseStorage');
     } finally {
       fs.unlinkSync(imagePath); // Remove the image from local storage after uploading
     }
@@ -323,22 +320,22 @@ const createTeacherAccount = async (req, res) => {
   console.log(req.body);
 
   if (!name) {
-    return badRequestError(res, 'please provide name ');
+    return badRequestError(res, 'pleaseProvideName ');
   }
   if (!username) {
-    return badRequestError(res, 'please provide username ');
+    return badRequestError(res, 'pleaseProvideUsername ');
   }
 
   if (!password) {
-    return badRequestError(res, 'please provide password ');
+    return badRequestError(res, 'pleaseProvidePassword ');
   }
 
   if (!phoneNumber) {
-    return badRequestError(res, 'please provide phoneNumber ');
+    return badRequestError(res, 'pleaseProvidePhoneNumber ');
   }
 
   if (!teacherClasses) {
-    return badRequestError(res, 'please provide teacher classes ');
+    return badRequestError(res, 'pleaseProvideTeacherClasses ');
   }
 
   if (req.files) {
@@ -346,15 +343,12 @@ const createTeacherAccount = async (req, res) => {
     const randomValue = generateRandomString(10);
 
     if (!imageValue.mimetype.startsWith('image')) {
-      return badRequestError(res, 'please provide image');
+      return badRequestError(res, 'pleaseProvideImage');
     }
 
     const size = 1024 * 1024 * 5;
     if (imageValue.size > size) {
-      return badRequestError(
-        res,
-        'please provide image that size is less than 5MB'
-      );
+      return badRequestError(res, 'pleaseProvideImageThatSizeIsLessThan5MB');
     }
 
     const imagePath = path.join(
@@ -397,7 +391,7 @@ const createTeacherAccount = async (req, res) => {
       res.json({ data: token, msg: '', authenticatedUser: res.locals.user });
     } catch (error) {
       console.error(error);
-      return badRequestError(res, 'Failed to upload image to Firebase Storage');
+      return badRequestError(res, 'failedToUploadImageToFirebaseStorage');
     } finally {
       fs.unlinkSync(imagePath); // Remove the image from local storage after uploading
     }
@@ -416,13 +410,13 @@ const createControllerAccount = async (req, res) => {
   const { name, username, email, password } = req.body;
 
   if (!name) {
-    return badRequestError(res, 'please provide name ');
+    return badRequestError(res, 'pleaseProvideName ');
   }
   if (!username) {
-    return badRequestError(res, 'please provide username ');
+    return badRequestError(res, 'pleaseProvideUsername ');
   }
   if (!password) {
-    return badRequestError(res, 'please provide password ');
+    return badRequestError(res, 'pleaseProvidePassword ');
   }
 
   const randomValue = generateRandomString(10);
@@ -431,15 +425,12 @@ const createControllerAccount = async (req, res) => {
     const imageValue = req.files.image;
 
     if (!imageValue.mimetype.startsWith('image')) {
-      return badRequestError(res, 'please provide image');
+      return badRequestError(res, 'pleaseProvideImage');
     }
 
     const size = 1024 * 1024 * 5;
     if (imageValue.size > size) {
-      return badRequestError(
-        res,
-        'please provide image that size is less than 5MB'
-      );
+      return badRequestError(res, 'pleaseProvideImageThatSizeIsLessThan5MB');
     }
 
     const imagePath = path.join(
@@ -482,7 +473,7 @@ const createControllerAccount = async (req, res) => {
       res.json({ data: token, msg: '', authenticatedUser: res.locals.user });
     } catch (error) {
       console.error(error);
-      return badRequestError(res, 'Failed to upload image to Firebase Storage');
+      return badRequestError(res, 'failedToUploadImageToFirebaseStorage');
     } finally {
       fs.unlinkSync(imagePath); // Remove the image from local storage after uploading
     }
@@ -505,11 +496,11 @@ const updateAccount = async (req, res) => {
   const { id } = req.params;
 
   if (!id) {
-    return badRequestError(res, 'please provide id');
+    return badRequestError(res, 'pleaseProvideID');
   }
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return badRequestError(res, 'please provide correct ID');
+    return badRequestError(res, 'pleaseProvideCorrectID');
   }
 
   let updatedUser;
@@ -524,7 +515,7 @@ const updateAccount = async (req, res) => {
       user = await CONTROLLER_SCHEMA.findOne({ _id: id });
     }
     if (!user) {
-      return notFoundError(res, 'There no such user in database');
+      return notFoundError(res, 'ThereNoSuchUserInDatabase');
     }
     //==============================
     // DELETE OLD IMAGE
@@ -542,12 +533,12 @@ const updateAccount = async (req, res) => {
       try {
         // Delete the file from Firebase Storage
         await bucket.file(filePath).delete();
-        console.log(`Successfully deleted file: ${filePath}`);
+        console.log(`successfully Deleted File: ${filePath}`);
       } catch (error) {
         console.error(`Failed to delete file: ${filePath}`, error);
         return badRequestError(
           res,
-          'Failed to delete associated image from Firebase Storage'
+          'failedToDeleteAssociatedImageFromFirebaseStorage'
         );
       }
     }
@@ -559,15 +550,12 @@ const updateAccount = async (req, res) => {
     const randomValue = generateRandomString(10);
 
     if (!imageValue.mimetype.startsWith('image')) {
-      return badRequestError(res, 'please provide image');
+      return badRequestError(res, 'pleaseProvideImage');
     }
 
     const size = 1024 * 1024 * 5;
     if (imageValue.size > size) {
-      return badRequestError(
-        res,
-        'please provide image that size is less than 5MB'
-      );
+      return badRequestError(res, 'pleaseProvideImageThatSizeIsLessThan5MB');
     }
 
     const imagePath = path.join(
@@ -601,7 +589,7 @@ const updateAccount = async (req, res) => {
       req.body.image = imageUrl;
     } catch (error) {
       console.error(error);
-      return badRequestError(res, 'Failed to upload image to Firebase Storage');
+      return badRequestError(res, 'failedToUploadImageToFirebaseStorage');
     } finally {
       fs.unlinkSync(imagePath); // Remove the image from local storage after uploading
     }
@@ -638,7 +626,7 @@ const updateAccount = async (req, res) => {
   }
 
   if (!updatedUser) {
-    return badRequestError(res, 'there no such user in database to be updated');
+    return badRequestError(res, 'thereNoSuchUserInDatabaseToBeUpdated');
   }
 
   const token = createUserToken(updatedUser);
@@ -652,11 +640,11 @@ const deleteAccount = async (req, res) => {
   const { id } = req.params;
 
   if (!id) {
-    return badRequestError(res, 'please provide id');
+    return badRequestError(res, 'pleaseProvideID');
   }
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return badRequestError(res, 'please provide correct ID');
+    return badRequestError(res, 'pleaseProvideCorrectID');
   }
 
   let deletedUser;
@@ -669,7 +657,7 @@ const deleteAccount = async (req, res) => {
     deletedUser = await CONTROLLER_SCHEMA.findOneAndDelete({ _id: id });
   }
   if (!deletedUser) {
-    return notFoundError(res, 'There no such user in database');
+    return notFoundError(res, 'ThereNoSuchUserInDatabase');
   }
 
   // Extract the image URL from the deleted post
@@ -686,7 +674,7 @@ const deleteAccount = async (req, res) => {
     console.error(`Failed to delete file: ${filePath}`, error);
     return badRequestError(
       res,
-      'Failed to delete associated image from Firebase Storage'
+      'failedToDeleteAssociatedImageFromFirebaseStorage'
     );
   }
 

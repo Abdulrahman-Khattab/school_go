@@ -38,4 +38,11 @@ const studentsMarksSchema = new monggose.Schema(
   next();
 });*/
 
+studentsMarksSchema.pre('save', function (next) {
+  this.studentName = this.studentName.toLowerCase();
+  this.subjectTitle = this.subjectTitle.toLowerCase();
+  this.examType = this.examType.toLowerCase();
+  next();
+});
+
 module.exports = monggose.model('StudentMarks', studentsMarksSchema);

@@ -45,10 +45,18 @@ const vacationRequest = async (req, res) => {
   req.body.senderRole = req.user.role;
   req.body.senderUsername = req.user.username;
   req.body.senderName = req.user.name;
-  const { senderDescription } = req.body;
+  const { senderDescription, vacationStartTime, vacationEndTime } = req.body;
 
   if (!senderDescription) {
     return badRequestError(res, 'please provide sender description');
+  }
+
+  if (!vacationStartTime) {
+    return badRequestError(res, 'Please provide vacation start time ');
+  }
+
+  if (!vacationEndTime) {
+    return badRequestError(res, 'Please provide vacation end time ');
   }
 
   const vacation = await VACATION_SCHEMA.create({ ...req.body });

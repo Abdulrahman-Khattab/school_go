@@ -69,4 +69,10 @@ userControllerSchema.methods.comparePassword = async function (canidate) {
   return await bcrypt.compare(canidate, this.password);
 };
 
+userControllerSchema.pre('save', function (next) {
+  this.name = this.name.toLowerCase();
+  this.username = this.username.toLowerCase();
+  next();
+});
+
 module.exports = monggose.model('CONTROLLER_SCHEMA', userControllerSchema);

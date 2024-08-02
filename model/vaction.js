@@ -30,8 +30,27 @@ const vactionSchema = new mongoose.Schema(
       enum: ['accepted', 'rejected', ''],
       default: '',
     },
+
+    vacationStartTime: {
+      type: Date,
+      default: '',
+    },
+
+    vacationEndTime: {
+      type: Date,
+      default: '',
+    },
   },
   { timestamps: true }
 );
+
+vactionSchema.pre('save', function (next) {
+  this.senderName = this.senderName.toLowerCase();
+  this.senderUsername = this.senderUsername.toLowerCase();
+  this.senderRole = this.senderRole.toLowerCase();
+  this.senderDescription = this.senderDescription.toLowerCase();
+
+  next();
+});
 
 module.exports = mongoose.model('VACATION_SCHEMA', vactionSchema);

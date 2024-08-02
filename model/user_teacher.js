@@ -99,4 +99,19 @@ userTeacherSchema.methods.comparePassword = async function (canidate) {
   return await bcrypt.compare(canidate, this.password);
 };
 
+userTeacherSchema.pre('save', function (next) {
+  this.name = this.name.toLowerCase();
+  this.username = this.username.toLowerCase();
+
+  if (this.teacherClasses && this.teacherClasses.length > 0) {
+    this.teacherClasses = this.teacherClasses.map((classValue) => {
+      return {
+        className: classValue.className.toLowerCase(),
+        classType: classValue.classType.toLowerCase(),
+      };
+    });
+  }
+  next();
+});
+
 module.exports = mongoose.model('TEACHER_SCHEMA', userTeacherSchema);

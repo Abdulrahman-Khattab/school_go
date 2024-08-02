@@ -96,4 +96,16 @@ userStudentSchema.methods.comparePassword = async function (canidate) {
   return await bcrypt.compare(canidate, this.password);
 };
 
+userStudentSchema.pre('save', function (next) {
+  this.name = this.name.toLowerCase();
+  this.username = this.username.toLowerCase();
+  if (this.student_parents && this.student_parents.length > 0) {
+    this.student_parents = this.student_parents.map((parent) =>
+      parent.toLowerCase()
+    );
+  }
+
+  next();
+});
+
 module.exports = monggose.model('STUDENT_SCHEMA', userStudentSchema);

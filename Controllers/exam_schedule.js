@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const { badRequestError, notFoundError } = require('../errors_2');
 
 const getALLExamsScheduled = async (req, res) => {
-  const allExams = await Exam_schedule.find({});
+  const allExams = await Exam_schedule.find({}).se;
   if (!allExams) {
     return badRequestError(res, 'NoExamsFoundINDB');
   }

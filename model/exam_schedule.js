@@ -32,6 +32,10 @@ const exam_schedule_schema = new mongoose.Schema(
       enum: ['quiz', 'mid-term', 'end-term', 'monthly'],
       required: [true, 'pleaseProvudeExamType'],
     },
+    note: {
+      type: String,
+      maxlength: 150,
+    },
   },
   {
     timestamps: true,

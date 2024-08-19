@@ -37,6 +37,15 @@ const weeklyScheduleSchema = new mongoose.Schema(
       required: [true, 'please provide saturday lectures schedule'],
       default: [],
     },
+    className: {
+      type: String,
+      required: [true, 'PleaseProvideExamClass'],
+    },
+
+    classType: {
+      type: String,
+      required: [true, 'PleaseProvideClassType'],
+    },
   },
   { timestamps: true }
 );

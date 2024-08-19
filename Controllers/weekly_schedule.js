@@ -1,10 +1,20 @@
 const mongoose = require('mongoose');
 const { badRequestError, notFoundError } = require('../errors_2');
 const Weekly_schedule = require('../model/weekly_schedule');
+const STUDENT_SCHEMA = require('../model/user_students');
 
 const createWeeklySchedule = async (req, res) => {
-  const { sunday, monday, tuseday, wednesday, thursday, friday, saturday } =
-    req.body;
+  const {
+    sunday,
+    monday,
+    tuseday,
+    wednesday,
+    thursday,
+    friday,
+    saturday,
+    className,
+    classType,
+  } = req.body;
   if (!sunday || sunday.length < 1) {
     return badRequestError(res, 'pleaseProvideSundayLessons');
   }
@@ -33,6 +43,14 @@ const createWeeklySchedule = async (req, res) => {
     return badRequestError(res, 'pleaseProvideSaturdayLessons');
   } */
 
+  if (!className) {
+    return badRequestError(res, 'PleaseProvideClassName');
+  }
+
+  if (!classType) {
+    return badRequestError(res, 'PleaseProvideClassType');
+  }
+
   const weeklySchedule = await Weekly_schedule.create(req.body);
 
   res.json({
@@ -56,24 +74,37 @@ const getAllWeekSchedule = async (req, res) => {
   });
 };
 
-const getSingleDaySchedule = async (req, res) => {
-  const { id } = req.params;
-  if (!id) {
+const getMyWeeklySchedule = async (req, res) => {
+  req.body.userId = req.user.userId;
+
+  const { userId } = req.body;
+
+  if (!userId) {
     return badRequestError(res, 'pleaseProvideId');
   }
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
     return badRequestError(res, 'pleaseProvideValidId');
   }
 
-  const weeklySchedule = await Weekly_schedule.findOne({ _id: id });
+  const studentInfo = await STUDENT_SCHEMA.findOne({ _id: userId });
 
-  if (!weeklySchedule) {
-    return notFoundError(res, 'pleaseProvideValidId');
+  if (!studentInfo) {
+    return notFoundError(res, 'ThereNoSuchStudentInfoInDataBase');
   }
 
+  const studentInfoQuery = {
+    className: studentInfo.className,
+    classType: studentInfo.classType,
+  };
+
+  const studentWeeklySchedule = await Weekly_schedule.findOne(studentInfoQuery);
+
+  if (!studentWeeklySchedule) {
+    return notFoundError(res, 'ThereIsNoSuchScheduleInDataBase');
+  }
   res.json({
-    data: weeklySchedule,
+    data: studentWeeklySchedule,
     msg: '',
     authenticatedUser: res.locals.user,
   });
@@ -138,7 +169,7 @@ const updateWeeklySchedule = async (req, res) => {
 module.exports = {
   createWeeklySchedule,
   getAllWeekSchedule,
-  getSingleDaySchedule,
+  getMyWeeklySchedule,
   deleteWeeklySchedule,
   updateWeeklySchedule,
 };

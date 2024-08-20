@@ -7,6 +7,10 @@ const studentsMarksSchema = new monggose.Schema(
       required: [true, 'student name must be included'],
     },
 
+    username: {
+      type: String,
+      required: [true, 'SubjectTitleMustBeIncluded'],
+    },
     subjectTitle: {
       type: String,
       required: [true, 'Subject title must be included '],

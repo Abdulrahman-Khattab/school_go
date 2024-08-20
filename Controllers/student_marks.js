@@ -1,21 +1,26 @@
 const StudentMarks = require('../model/student_marks');
-const { badRequestError } = require('../errors_2');
+const { badRequestError, notFoundError } = require('../errors_2');
 const mongoose = require('mongoose');
 const { StatusCodes } = require('http-status-codes');
+const STUDENT_SCHEMA = require('../model/user_students');
 
 const createStudentMarks = async (req, res) => {
-  const { studentName, subjectTitle, examType, studentMark } = req.body;
+  const { studentName, subjectTitle, examType, studentMark, username } =
+    req.body;
   if (!studentName) {
-    return badRequestError(res, 'pleaseProvideStudentName ');
+    return badRequestError(res, 'pleaseProvideStudentName');
   }
   if (!subjectTitle) {
-    return badRequestError(res, 'pleaseProvideSubjectTitle ');
+    return badRequestError(res, 'pleaseProvideSubjectTitle');
   }
   if (!examType) {
-    return badRequestError(res, 'pleaseProvideExamType ');
+    return badRequestError(res, 'pleaseProvideExamType');
   }
   if (!studentMark) {
-    return badRequestError(res, 'pleaseProvideStudentMark ');
+    return badRequestError(res, 'pleaseProvideStudentMark');
+  }
+  if (!username) {
+    return badRequestError(res, 'pleaseProvideusername');
   }
 
   const studentMarkRecord = await StudentMarks.create({ ...req.body });
@@ -52,6 +57,35 @@ const getStudentMarks = async (req, res) => {
   const studentsInfo = await StudentMarks.find(studentQuery);
 
   res.json({ data: studentsInfo, msg: '', authenticatedUser: res.locals.user });
+};
+
+const getMyMarks = async (req, res) => {
+  req.body.userId = req.user.userId;
+  const { userId } = req.body;
+
+  if (!userId) {
+    return badRequestError(res, 'pleaseProvideId');
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return badRequestError(res, 'pleaseProvideValidId');
+  }
+
+  const studentInfo = await STUDENT_SCHEMA.findOne({ _id: userId });
+
+  if (!studentInfo) {
+    return notFoundError(res, 'ThereNoSuchStudentInDatabase');
+  }
+
+  const studentMarks = await StudentMarks.find({
+    username: studentInfo.username,
+  });
+
+  if (!studentMarks) {
+    return notFoundError(res, 'ThisStudentHaveNoExamInformation');
+  }
+
+  res.json({ data: studentMarks, msg: '', authenticatedUser: res.locals.user });
 };
 
 const deleteStudentMark = async (req, res) => {
@@ -131,4 +165,5 @@ module.exports = {
   getStudentMarks,
   deleteStudentMark,
   updateStudentMarks,
+  getMyMarks,
 };

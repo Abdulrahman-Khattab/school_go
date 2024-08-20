@@ -143,8 +143,66 @@ const getMyCalenderInfo = async (req, res) => {
   });
 };
 
+const deleteMonthlyCalenderNote = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return badRequestError(res, 'PleasePorvideId');
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return badRequestError(res, 'PleasePorvideValidId');
+  }
+
+  const deleteMonthlyCalenderNote = await Monthly_calender.findOneAndDelete({
+    _id: id,
+  });
+
+  if (!deleteMonthlyCalenderNote) {
+    return notFoundError(res, 'ThereIsNoSuchMonthlyCalenderNoteInDataBase');
+  }
+
+  res.json({
+    data: deleteMonthlyCalenderNote,
+    msg: '',
+    authenticatedUser: res.locals.user,
+  });
+};
+
+const updateMonthlyCalenderNote = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return badRequestError(res, 'PleasePorvideId');
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return badRequestError(res, 'PleasePorvideValidId');
+  }
+
+  const updateMonthlyCalenderNote = await Monthly_calender.findOneAndUpdate(
+    {
+      _id: id,
+    },
+    { ...req.body },
+    { new: true, runValidators: true }
+  );
+
+  if (!updateMonthlyCalenderNote) {
+    return notFoundError(res, 'ThereIsNoSuchMonthlyCalenderNoteInDataBase');
+  }
+
+  res.json({
+    data: updateMonthlyCalenderNote,
+    msg: '',
+    authenticatedUser: res.locals.user,
+  });
+};
+
 module.exports = {
   createCalenderNote,
   getAllMonthlyCalenderNote,
   getMyCalenderInfo,
+  deleteMonthlyCalenderNote,
+  updateMonthlyCalenderNote,
 };

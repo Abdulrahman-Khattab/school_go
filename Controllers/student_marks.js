@@ -62,6 +62,26 @@ const getStudentMarks = async (req, res) => {
 const getMyMarks = async (req, res) => {
   req.body.userId = req.user.userId;
   const { userId } = req.body;
+  const { studentName, examType, studentMark, subjectTitle, id } = req.query;
+
+  const studentQuery = {};
+
+  if (studentName) {
+    studentQuery.studentName = studentName;
+  }
+  if (examType) {
+    studentQuery.examType = examType;
+  }
+
+  if (studentMark) {
+    studentQuery.studentMark = studentMark;
+  }
+  if (subjectTitle) {
+    studentQuery.subjectTitle = subjectTitle;
+  }
+  if (id) {
+    studentQuery.id = id;
+  }
 
   if (!userId) {
     return badRequestError(res, 'pleaseProvideId');
@@ -79,6 +99,7 @@ const getMyMarks = async (req, res) => {
 
   const studentMarks = await StudentMarks.find({
     username: studentInfo.username,
+    ...studentQuery,
   });
 
   if (!studentMarks) {

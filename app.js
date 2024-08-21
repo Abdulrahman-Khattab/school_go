@@ -13,6 +13,7 @@ const user_Routers = require('./routes/users');
 const Weekly_schedule_router = require('./routes/weekly_schedule');
 const exam_schedule_router = require('./routes/exam_schedule');
 const Monthly_calender_router = require('./routes/monthly_calender');
+const books_router = require('./routes/books');
 
 // using main utility library
 const app = express();
@@ -30,6 +31,7 @@ app.use('/schoolSystem/v1/api/users', user_Routers);
 app.use('/schoolSystem/v1/api/weeklySchedule', Weekly_schedule_router);
 app.use('/schoolSystem/v1/api/examSchedule', exam_schedule_router);
 app.use('/schoolSystem/v1/api/monthlyCalender', Monthly_calender_router);
+app.use('/schoolSystem/v1/api/books', books_router);
 
 // front-page (test mode only)
 app.get('/', async (req, res) => {

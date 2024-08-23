@@ -52,4 +52,10 @@ const quiz_schema = new mongoose.Schema(
   }
 );
 
+quiz_schema.pre('save', function (next) {
+  this.subject = this.subject.toLowerCase();
+
+  next();
+});
+
 module.exports = mongoose.model('Quiz', quiz_schema);

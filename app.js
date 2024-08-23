@@ -16,6 +16,7 @@ const Monthly_calender_router = require('./routes/monthly_calender');
 const books_router = require('./routes/books');
 const homeWorks_router = require('./routes/homeWorks');
 const quiz_router = require('./routes/quiz');
+const resource_router = require('./routes/resource');
 
 // using main utility library
 const app = express();
@@ -36,6 +37,7 @@ app.use('/schoolSystem/v1/api/monthlyCalender', Monthly_calender_router);
 app.use('/schoolSystem/v1/api/books', books_router);
 app.use('/schoolSystem/v1/api/homeWorks', homeWorks_router);
 app.use('/schoolSystem/v1/api/quiz', quiz_router);
+app.use('/schoolSystem/v1/api/resource', resource_router);
 
 // front-page (test mode only)
 app.get('/', async (req, res) => {

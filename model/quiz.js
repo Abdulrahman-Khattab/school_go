@@ -41,11 +41,6 @@ const quiz_schema = new mongoose.Schema(
         },
       ],
     },
-
-    deadLine: {
-      type: Date,
-      required: true,
-    },
   },
   {
     timestamps: true,

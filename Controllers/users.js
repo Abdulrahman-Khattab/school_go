@@ -47,6 +47,8 @@ const vacationRequest = async (req, res) => {
   req.body.senderName = req.user.name;
   const { senderDescription, vacationStartTime, vacationEndTime } = req.body;
 
+  console.log(req.body);
+
   if (!senderDescription) {
     return badRequestError(res, 'pleaseProvideSenderDescription');
   }

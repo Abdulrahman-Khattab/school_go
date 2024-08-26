@@ -681,6 +681,32 @@ const deleteAccount = async (req, res) => {
   res.json({ data: deletedUser, msg: '', authenticatedUser: res.locals.user });
 };
 
+const myVacations = async (req, res) => {
+  const userId = req.user.userId;
+  console.log(`Hello we are ${userId}`);
+  if (!userId) {
+    return badRequestError(res, 'pleaseProvideID');
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return badRequestError(res, 'pleaseProvideCorrectID');
+  }
+
+  const usersVacations = await VACATION_SCHEMA.find({ senderId: userId });
+
+  if (!usersVacations) {
+    return notFoundError(res, 'YouHaveNoVacationsRequests');
+  }
+
+  console.log(usersVacations);
+
+  res.json({
+    data: usersVacations,
+    msg: '',
+    authenticatedUser: res.locals.user,
+  });
+};
+
 module.exports = {
   vacationRequest,
   getWeeklyVacationRequest,
@@ -692,4 +718,5 @@ module.exports = {
   login,
   getAllUsers,
   checkUserInfo,
+  myVacations,
 };

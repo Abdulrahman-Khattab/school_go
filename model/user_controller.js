@@ -52,6 +52,10 @@ const userControllerSchema = new monggose.Schema(
       type: Boolean,
       default: false,
     },
+    gender: {
+      type: String,
+      required: [true, 'please provide Gender'],
+    },
   },
   {
     timestamps: true,

@@ -29,6 +29,11 @@ const userStudentSchema = new monggose.Schema(
       unique: true,
     },
 
+    gender: {
+      type: String,
+      required: [true, 'please provide Gender'],
+    },
+
     email: {
       type: String,
 

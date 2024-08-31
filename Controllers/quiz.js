@@ -9,7 +9,8 @@ const createQuiz = async (req, res) => {
   let allowedClasses = [];
   let classTypesQuiz = [];
   let classNameQuiz;
-  const { subject, className, classTypes, quizInformation } = req.body;
+  const { subject, className, classTypes, quizInformation, subjectIcon } =
+    req.body;
   if (!subject) {
     return badRequestError(res, 'PleaseProvideSubject');
   }
@@ -21,6 +22,9 @@ const createQuiz = async (req, res) => {
   }
   if (!quizInformation || quizInformation.length == 0) {
     return badRequestError(res, 'PleaseProvideQuizInformation');
+  }
+  if (!subjectIcon || subjectIcon.length == 0) {
+    return badRequestError(res, 'PleaseProvideSubjectIcon');
   }
 
   const teacherInfo = await TEACHER_SCHEMA.findOne({ _id: teacherId });
@@ -57,6 +61,7 @@ const createQuiz = async (req, res) => {
     className: classNameQuiz,
     classTypes: classTypesQuiz,
     quizInformation: quizInformation,
+    subjectIcon: subjectIcon,
   });
 
   if (!quiz) {

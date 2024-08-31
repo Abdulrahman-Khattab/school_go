@@ -8,6 +8,10 @@ const homeWork_schema = new mongoose.Schema(
       require: true,
     },
 
+    subjectIcon: {
+      type: String,
+    },
+
     classHomework: {
       type: String,
       required: true,

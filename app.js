@@ -45,91 +45,9 @@ app.get('/', async (req, res) => {
 });
 
 //==============================================
-//BACKUP PROCESS FIRST TYPE
+//BACKUP
 //==============================================
-/*
-const { exec } = require('child_process');
-const path = require('path');
-const fs = require('fs');
-
-// MongoDB Atlas connection string
-const connectionString =
-  'mongodb+srv://Abdulrahman:12345@nodejsproject.x3hvgne.mongodb.net/?retryWrites=true&w=majority&appName=NodeJSPROJECT';
-
-// Function to perform the backup
-function performBackup() {
-  // Define backup directory with timestamp
-  const backupDir = path.join(
-    'C:/Users/CORE/Desktop/backupfolder',
-    new Date().toISOString().replace(/:/g, '-')
-  );
-  fs.mkdirSync(backupDir, { recursive: true });
-
-  // Run mongodump command
-  const dumpCommand = `mongodump --uri="${connectionString}" --out ${backupDir}`;
-  exec(dumpCommand, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error: ${error.message}`);
-      return;
-    }
-    if (stderr) {
-      console.error(`Stderr: ${stderr}`);
-      return;
-    }
-    console.log(`Backup completed: ${stdout}`);
-  });
-}
-// Run the backup immediately when the script starts
-performBackup();
-*/
-//==============================================
-//END OF BACKUP PROCESS FIRST TYPE
-//==============================================
-
-//==============================================
-// BACKUP PROCESS SECOND TYPE
-//==============================================
-const { exec } = require('child_process');
-const path = require('path');
-const fs = require('fs');
-const axios = require('axios');
-const { PassThrough } = require('stream');
-const FormData = require('form-data');
-
-//==============================================
-// END OF BACKUP PROCESS SECOND TYPE
-//==============================================
-
-//==============================================
-//RESTORE PROCESS
-//==============================================
-// MongoDB Atlas connection string
-/*const connectionString2 =
-  'mongodb+srv://Abdulrahman:12345@nodejsproject.x3hvgne.mongodb.net/?retryWrites=true&w=majority&appName=NodeJSPROJECT';
-
-// Function to perform the restore
-function restoreBackup(backupDir) {
-  const restoreCommand = `mongorestore --uri="${connectionString2}" --drop ${backupDir}`;
-  exec(restoreCommand, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error: ${error.message}`);
-      return;
-    }
-    if (stderr) {
-      console.error(`Stderr: ${stderr}`);
-      return;
-    }
-    console.log(`Restore completed: ${stdout}`);
-  });
-} */
-
-//=======================================================
-//THIS CODE SHOULD BE USED IN CASE OF DISSASTER ONLY
-//=====================================================
-
-//==============================================
-//END OF RESTORE PROCESS
-//==============================================
+const { performBackup } = require('./backup/createBackup');
 
 // running server
 const start = async () => {
@@ -143,6 +61,8 @@ const start = async () => {
   }
 };
 start();
+
+//performBackup();
 
 // Run backup every 30 minutes
 //const thirtyMinutes = 60 * 30 * 1000;

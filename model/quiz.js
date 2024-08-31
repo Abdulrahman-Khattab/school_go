@@ -7,7 +7,10 @@ const quiz_schema = new mongoose.Schema(
       ref: 'TEACHER_SCHEMA',
       required: true,
     },
-
+    subjectIcon: {
+      type: String,
+      required: true,
+    },
     subject: {
       type: String,
       required: true,

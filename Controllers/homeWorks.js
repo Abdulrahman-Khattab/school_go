@@ -16,6 +16,7 @@ const createHomeWork = async (req, res) => {
     description,
     deadLine,
     userId,
+    subjectIcon,
   } = req.body;
 
   if (!classHomework) {
@@ -36,6 +37,10 @@ const createHomeWork = async (req, res) => {
 
   if (!classes) {
     return badRequestError(res, 'PleaseProvideClass');
+  }
+
+  if (!subjectIcon) {
+    return badRequestError(res, 'pleaseProvideSubjectIcon');
   }
 
   const teacherInfo = await TEACHER_SCHEMA.findOne({ _id: userId });
@@ -81,6 +86,7 @@ const createHomeWork = async (req, res) => {
     classTypesHomeWork: classTypes,
     description: description,
     deadLine: deadLine,
+    subjectIcon: subjectIcon,
   });
 
   if (!homeWork) {

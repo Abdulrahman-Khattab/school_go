@@ -155,9 +155,112 @@ const deleteHomeWork = async (req, res) => {
   });
 };
 
+const updateHomework = async (req, res) => {
+  let classTypes = [];
+  let className;
+  req.body.userId = req.user.userId;
+  const updatedData = {};
+
+  const { id } = req.params;
+  if (!id) {
+    return badRequestError(res, 'pleaseProvideId');
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return badRequestError(res, 'pleaseProvideValidId');
+  }
+
+  const {
+    classHomework,
+    classes,
+    classTypesHomeWork,
+    description,
+    deadLine,
+    userId,
+    subjectIcon,
+  } = req.body;
+  const teacherInfo = await TEACHER_SCHEMA.findOne({ _id: userId });
+  const homeWorkInfo = await Homework.findOne({ _id: id });
+
+  if (classes) {
+    teacherInfo.teacherClasses.forEach((teacherClass) => {
+      if (teacherClass.className == classes) {
+        className = classes;
+      }
+      return;
+    });
+  }
+
+  if (classTypesHomeWork) {
+    teacherInfo.teacherClasses.forEach((teacherClass) => {
+      if (
+        classTypesHomeWork.includes(teacherClass.classType) &&
+        (teacherClass.className == classes ||
+          teacherClass.className == homeWorkInfo.classes)
+      ) {
+        classTypes.push(teacherClass.classType);
+      }
+      return;
+    });
+  }
+
+  if (description) {
+    updatedData.description = description;
+  }
+  if (deadLine) {
+    updatedData.deadLine = deadLine;
+  }
+
+  if (classes) {
+    updatedData.classes = classes;
+  }
+
+  if (subjectIcon) {
+    updatedData.subjectIcon = subjectIcon;
+  }
+
+  if (classHomework) {
+    updatedData.classHomework = classHomework;
+  }
+
+  updatedData.teacherId = req.user.userId;
+  // console.log(teacherInfo);
+
+  //  console.log(allowedClasses);
+
+  if (classTypes && classTypes.length > 0) {
+    updatedData.classTypesHomeWork = classTypes;
+  }
+
+  //console.log(classTypes);
+
+  //console.log(className);
+
+  if (className) {
+    updatedData.classes = className;
+  }
+
+  console.log(updatedData);
+
+  const homeWork = await Homework.findOneAndUpdate({ _id: id }, updatedData, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!homeWork) {
+    return badRequestError(
+      res,
+      'SomethingWrongWithCreatingNewHomeWorkPleaseTryAgainLater'
+    );
+  }
+
+  res.json({ data: homeWork, msg: '', authenticatedUser: res.locals.user });
+};
+
 module.exports = {
   createHomeWork,
   getMyHomeWorks,
   getAllHomeWorks,
   deleteHomeWork,
+  updateHomework,
 };

@@ -74,7 +74,7 @@ const userTeacherSchema = new mongoose.Schema(
     },
 
     phoneNumber: {
-      type: Number,
+      type: String,
       required: [true, 'please provide student phoneNumber'],
     },
     state: {

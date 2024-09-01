@@ -228,7 +228,10 @@ const deleteBook = async (req, res) => {
   });
 };
 
-const updateMonthlyCalenderNote = async (req, res) => {
+const updateBook = async (req, res) => {
+  let newBookPdfURL;
+  let newBookCoverURL;
+
   const { id } = req.params;
 
   if (!id) {
@@ -239,23 +242,191 @@ const updateMonthlyCalenderNote = async (req, res) => {
     return badRequestError(res, 'PleasePorvideValidId');
   }
 
-  const updateMonthlyCalenderNote = await Monthly_calender.findOneAndUpdate(
-    {
-      _id: id,
-    },
-    { ...req.body },
-    { new: true, runValidators: true }
-  );
+  const bookInfo = await Books.findOne({ _id: id });
 
-  if (!updateMonthlyCalenderNote) {
-    return notFoundError(res, 'ThereIsNoSuchMonthlyCalenderNoteInDataBase');
+  if (!bookInfo) {
+    return notFoundError(res, 'ThereNoSuchBookInDatabase');
   }
 
+  //=====================================================
+
+  const randomValue = generateRandomString(10);
+  const bookPdf = req.files.bookPDF;
+  const bookCover = req.files.bookCover;
+  if (bookPdf) {
+    //=====================================================
+    if (!bookPdf.mimetype.startsWith('application/pdf')) {
+      return badRequestError(res, 'pleaseProvideBook');
+    }
+
+    let size = 1024 * 1024 * 40;
+    if (bookPdf.size > size) {
+      return badRequestError(res, 'pleaseProvidebookPdfThatSizeIsLessThan40MB');
+    }
+
+    //if (!bookCover.mimetype.startsWith('application/pdf')) {
+    //return badRequestError(res, 'pleaseProvideBook');
+    //}
+
+    size = 1024 * 1024 * 10;
+    if (bookPdf.size > size) {
+      return badRequestError(
+        res,
+        'pleaseProvidebookCoverThatSizeIsLessThan10MB'
+      );
+    }
+
+    bookPdf.name = bookPdf.name.split(' ').join('');
+
+    const booksPdfPath = path.join(
+      __dirname,
+      `../public/booksPdf/`,
+      `${bookPdf.name}`
+    );
+    await bookPdf.mv(booksPdfPath);
+    //=====================================================
+
+    const downloadTokenbookPdf = uuidv4(); // Generate a unique token
+    const metadataBookPdf = {
+      metadata: {
+        firebaseStorageDownloadTokens: downloadTokenbookPdf,
+      },
+      contentType: bookPdf.mimetype,
+    };
+
+    await bucket.upload(booksPdfPath, {
+      destination: `public/booksPdf/${randomValue + bookPdf.name}`,
+      metadata: metadataBookPdf,
+    });
+
+    const fileBookPdf = bucket.file(
+      `public/booksPdf/${randomValue + bookPdf.name}`
+    );
+    const bookPdfUrl = `https://firebasestorage.googleapis.com/v0/b/${
+      bucket.name
+    }/o/${encodeURIComponent(
+      fileBookPdf.name
+    )}?alt=media&token=${downloadTokenbookPdf}`;
+
+    newBookPdfURL = bookPdfUrl;
+    fs.unlinkSync(booksPdfPath); // Remove the image from local storage after uploading
+    //=====================================================
+
+    const deleteBookPdf = bookInfo.bookPDF;
+    console.log(deleteBookPdf);
+    // Extract the file path from the image URL
+    const bookPDFPath = decodeURIComponent(
+      deleteBookPdf.split('/o/')[1].split('?')[0]
+    );
+    try {
+      // Delete the file from Firebase Storage
+      await bucket.file(bookPDFPath).delete();
+
+      console.log(`Successfully deleted file: ${bookPDFPath} and`);
+    } catch (error) {
+      console.error(`Failed to delete file: ${bookPDFPath}`, error);
+      return badRequestError(
+        res,
+        'FailedToDeleteAssociatedImageFromFirebaseStorage'
+      );
+    }
+  }
+
+  //=====================================================
+
+  if (bookCover) {
+    let size = 1024 * 1024 * 5;
+    if (bookCover.size > size) {
+      return badRequestError(
+        res,
+        'pleaseProvidebookCoverThatSizeIsLessThan40MB'
+      );
+    }
+
+    //if (!bookCover.mimetype.startsWith('application/pdf')) {
+    //return badRequestError(res, 'pleaseProvideBook');
+    //}
+
+    bookCover.name = bookCover.name.split(' ').join('');
+
+    const booksCoverPdfPath = path.join(
+      __dirname,
+      `../public/booksCover/`,
+      `${bookCover.name}`
+    );
+    await bookCover.mv(booksCoverPdfPath);
+    //=====================================================
+
+    const downloadTokenbookCover = uuidv4(); // Generate a unique token
+    const metadataBookCover = {
+      metadata: {
+        firebaseStorageDownloadTokens: downloadTokenbookCover,
+      },
+      contentType: bookCover.mimetype,
+    };
+
+    await bucket.upload(booksCoverPdfPath, {
+      destination: `public/booksCover/${randomValue + bookCover.name}`,
+      metadata: metadataBookCover,
+    });
+
+    const fileBookCover = bucket.file(
+      `public/booksCover/${randomValue + bookCover.name}`
+    );
+    const bookCoverUrl = `https://firebasestorage.googleapis.com/v0/b/${
+      bucket.name
+    }/o/${encodeURIComponent(
+      fileBookCover.name
+    )}?alt=media&token=${downloadTokenbookCover}`;
+
+    newBookCoverURL = bookCoverUrl;
+    fs.unlinkSync(booksCoverPdfPath); // Remove the image from local storage after uploading
+
+    //=====================================================
+
+    const deleteBookCover = bookInfo.bookCover;
+    // Extract the file path from the image URL
+    const bookCoverPath = decodeURIComponent(
+      deleteBookCover.split('/o/')[1].split('?')[0]
+    );
+    try {
+      // Delete the file from Firebase Storage
+      await bucket.file(bookCoverPath).delete();
+
+      console.log(`Successfully deleted file: ${bookCoverPath}`);
+    } catch (error) {
+      console.error(`Failed to delete file: ${bookCoverPath}`, error);
+      return badRequestError(
+        res,
+        'FailedToDeleteAssociatedImageFromFirebaseStorage'
+      );
+    }
+  }
+
+  const updatedBook = await Books.findOneAndUpdate(
+    { _id: id },
+    {
+      bookCover: newBookCoverURL,
+      bookPDF: newBookPdfURL,
+      ...req.body,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
   res.json({
-    data: updateMonthlyCalenderNote,
+    data: updatedBook,
     msg: '',
     authenticatedUser: res.locals.user,
   });
 };
 
-module.exports = { createBook, getMyBooks, deleteBook, getAllBooks };
+module.exports = {
+  createBook,
+  getMyBooks,
+  deleteBook,
+  getAllBooks,
+  updateBook,
+};

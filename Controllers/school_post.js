@@ -180,9 +180,101 @@ const deleteSchoolPost = async (req, res) => {
   });
 };
 
+const updatePost = async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return badRequestError(res, 'pleaseProvideID');
+  }
+  const postInfo = await School_post.findOne({ _id: id });
+  let updatedImagePostURL;
+  const randomValue = generateRandomString(10);
+
+  if (req.files) {
+    const imageValue = req.files.image;
+    if (imageValue) {
+      if (!imageValue.mimetype.startsWith('image')) {
+        return badRequestError(res, 'pleaseProvideImage');
+      }
+
+      const size = 1024 * 1024 * 5;
+      if (imageValue.size > size) {
+        return badRequestError(res, 'pleaseProvideImageThatSizeIsLessThan5MB');
+      }
+
+      const imagePath = path.join(
+        __dirname,
+        `../public/photo/`,
+        `${imageValue.name}`
+      );
+      await imageValue.mv(imagePath);
+      const downloadToken = uuidv4(); // Generate a unique token
+
+      const metadata = {
+        metadata: {
+          firebaseStorageDownloadTokens: downloadToken,
+        },
+        contentType: imageValue.mimetype,
+      };
+
+      await bucket.upload(imagePath, {
+        destination: `public/photo/${randomValue + imageValue.name}`,
+        metadata: metadata,
+      });
+
+      const file = bucket.file(`public/photo/${randomValue + imageValue.name}`);
+      const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${
+        bucket.name
+      }/o/${encodeURIComponent(file.name)}?alt=media&token=${downloadToken}`;
+      fs.unlinkSync(imagePath); // Remove the image from local storage after uploading
+      updatedImagePostURL = imageUrl;
+      //=========================================================================
+
+      if (postInfo.image) {
+        console.log(postInfo.image);
+        console.log(postInfo.image);
+        // Extract the image URL from the deleted post
+        const imageUrlDelete = postInfo.image;
+
+        // Extract the file path from the image URL
+        const filePath = decodeURIComponent(
+          imageUrlDelete.split('/o/')[1].split('?')[0]
+        );
+
+        try {
+          // Delete the file from Firebase Storage
+          await bucket.file(filePath).delete();
+          console.log(`Successfully deleted file: ${filePath}`);
+        } catch (error) {
+          console.error(`Failed to delete file: ${filePath}`, error);
+          return badRequestError(
+            res,
+            'FailedToDeleteAssociatedImageFromFirebaseStorage'
+          );
+        }
+      }
+    }
+  }
+
+  const updatedPost = await School_post.findOneAndUpdate(
+    { _id: id },
+    { image: updatedImagePostURL, ...req.body },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  res.status(StatusCodes.ACCEPTED).json({
+    data: updatedPost,
+    msg: '',
+    authenticatedUser: res.locals.user,
+  });
+};
+
 module.exports = {
   createSchoolPost,
   getAllSchoolPost,
   getSingleSchoolPost,
   deleteSchoolPost,
+  updatePost,
 };

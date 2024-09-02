@@ -9,7 +9,7 @@ const createResource = async (req, res) => {
   let allowedClasses = [];
   let classTypesResource = [];
   let classNameResource;
-  const { className, classTypes, title, text } = req.body;
+  const { className, classTypes, title, text, subjectIcon } = req.body;
 
   if (!className) {
     return badRequestError(res, 'PleaseProvideClassName');
@@ -22,6 +22,9 @@ const createResource = async (req, res) => {
   }
   if (!text) {
     return badRequestError(res, 'PleaseProvideText');
+  }
+  if (!subjectIcon) {
+    return badRequestError(res, 'PleaseProvideSubjectIcont');
   }
 
   const teacherInfo = await TEACHER_SCHEMA.findOne({ _id: teacherId });
@@ -62,6 +65,8 @@ const createResource = async (req, res) => {
     classTypes: classTypesResource,
     text: text,
     title: title,
+    teacherName: teacherInfo.name,
+    subjectIcon: subjectIcon,
   });
 
   if (!resource) {
@@ -125,9 +130,82 @@ const deleteResource = async (req, res) => {
   });
 };
 
+const updateResource = async (req, res) => {
+  let classTypesUpdate = [];
+  let classNameUpdate;
+  const updatedData = {};
+
+  const { id } = req.params;
+  if (!id) {
+    return badRequestError(res, 'pleaseProvideId');
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return badRequestError(res, 'pleaseProvideValidId');
+  }
+
+  const { className, classTypes, title, text, subjectIcon } = req.body;
+
+  const teacherInfo = await TEACHER_SCHEMA.findOne({ _id: req.user.userId });
+  const resourceInfo = await Resource.findOne({ _id: id });
+
+  if (className) {
+    teacherInfo.teacherClasses.forEach((teacherClass) => {
+      if (teacherClass.className == className) {
+        classNameUpdate = className;
+      }
+      return;
+    });
+    updatedData.className = classNameUpdate;
+  }
+
+  if (classTypes || classTypes.length == 0) {
+    teacherInfo.teacherClasses.forEach((teacherClass) => {
+      if (
+        classTypes.includes(teacherClass.classType) &&
+        (teacherClass.className == className ||
+          teacherClass.className == resourceInfo.className)
+      ) {
+        classTypesUpdate.push(teacherClass.classType);
+      }
+      return;
+    });
+
+    if (classTypesUpdate.length > 0) {
+      updatedData.classTypes = classTypesUpdate;
+    }
+  }
+
+  if (title) {
+    updatedData.title = title;
+  }
+  if (text) {
+    updatedData.text = text;
+  }
+  if (subjectIcon) {
+    updatedData.subjectIcon = subjectIcon;
+  }
+
+  const updatedResource = await Resource.findOneAndUpdate(
+    { _id: id },
+    updatedData,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  res.json({
+    data: updatedResource,
+    msg: '',
+    authenticatedUser: res.locals.user,
+  });
+};
+
 module.exports = {
   createResource,
   getMyResource,
   getAllResources,
   deleteResource,
+  updateResource,
 };

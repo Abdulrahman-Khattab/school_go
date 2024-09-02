@@ -10,6 +10,7 @@ const {
   getWeeklyVacationRequest,
   checkUserInfo,
   myVacations,
+  updateVacationState,
 } = require('../Controllers/users');
 
 const express = require('express');
@@ -36,5 +37,10 @@ Router.delete('/controller/controller/:id', authenticaiton, deleteAccount);
 Router.get('/controller/users', authenticaiton, getAllUsers);
 Router.get('/controller/vacations', authenticaiton, getWeeklyVacationRequest);
 Router.get('/vacations/myVacations', authenticaiton, myVacations);
+Router.patch(
+  '/vacations/updateVacationState/:id',
+  authenticaiton,
+  updateVacationState
+);
 
 module.exports = Router;

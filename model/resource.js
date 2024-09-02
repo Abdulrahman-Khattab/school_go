@@ -8,6 +8,15 @@ const resource_schema = new mongoose.Schema(
       required: true,
     },
 
+    teacherName: {
+      type: String,
+      required: true,
+    },
+
+    subjectIcon: {
+      type: String,
+      required: true,
+    },
     className: {
       type: String,
       required: true,

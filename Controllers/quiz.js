@@ -125,4 +125,91 @@ const deleteQuiz = async (req, res) => {
   });
 };
 
-module.exports = { createQuiz, getMyQuiz, getAllQuizes, deleteQuiz };
+const updateQuiz = async (req, res) => {
+  let classTypesUpdate = [];
+  let classNameUpdate;
+  const updatedData = {};
+
+  const { id } = req.params;
+  if (!id) {
+    return badRequestError(res, 'pleaseProvideId');
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return badRequestError(res, 'pleaseProvideValidId');
+  }
+
+  const {
+    className,
+    classTypes,
+    subject,
+    subjectIcon,
+    deadLine,
+    quizInformation,
+  } = req.body;
+
+  const teacherInfo = await TEACHER_SCHEMA.findOne({ _id: req.user.userId });
+  const quizInfo = await Quiz.findOne({ _id: id });
+
+  if (className) {
+    teacherInfo.teacherClasses.forEach((teacherClass) => {
+      if (teacherClass.className == className) {
+        classNameUpdate = className;
+      }
+      return;
+    });
+    updatedData.className = classNameUpdate;
+  }
+
+  if (classTypes || classTypes.length == 0) {
+    teacherInfo.teacherClasses.forEach((teacherClass) => {
+      if (
+        classTypes.includes(teacherClass.classType) &&
+        (teacherClass.className == className ||
+          teacherClass.className == quizInfo.className)
+      ) {
+        classTypesUpdate.push(teacherClass.classType);
+      }
+      return;
+    });
+
+    if (classTypesUpdate.length > 0) {
+      updatedData.classTypes = classTypesUpdate;
+    }
+  }
+
+  if (subject) {
+    updatedData.subject = subject;
+  }
+  if (subjectIcon) {
+    updatedData.subjectIcon = subjectIcon;
+  }
+  if (quizInformation) {
+    updatedData.quizInformation = quizInformation;
+  }
+
+  if (deadLine) {
+    updatedData.deadLine = deadLine;
+  }
+
+  console.log(updatedData);
+
+  const updatedQuiz = await Quiz.findOneAndUpdate({ _id: id }, updatedData, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.json({
+    data: updatedQuiz,
+    msg: '',
+    authenticatedUser: res.locals.user,
+  });
+};
+
+module.exports = {
+  createQuiz,
+  getMyQuiz,
+  getAllQuizes,
+  deleteQuiz,
+  updateQuiz,
+};

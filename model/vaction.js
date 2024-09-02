@@ -26,9 +26,9 @@ const vactionSchema = new mongoose.Schema(
     },
 
     vacationState: {
-      type: String,
-      enum: ['accepted', 'rejected', ''],
-      default: '',
+      type: Number,
+      enum: [-1, 0, 1],
+      default: 0,
     },
 
     vacationStartTime: {

@@ -709,6 +709,37 @@ const myVacations = async (req, res) => {
   });
 };
 
+const updateVacationState = async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return badRequestError(res, 'pleaseProvideID');
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return badRequestError(res, 'pleaseProvideCorrectID');
+  }
+
+  const { vacationState } = req.body;
+  if (!vacationState) {
+    return notFoundError(res, 'PleaseProvideNewStateOfVacation');
+  }
+
+  const vacation = await VACATION_SCHEMA.findOneAndUpdate(
+    { _id: id },
+    { vacationState: vacationState },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  res.json({
+    data: vacation,
+    msg: '',
+    authenticatedUser: res.locals.user,
+  });
+};
+
 module.exports = {
   vacationRequest,
   getWeeklyVacationRequest,
@@ -721,4 +752,5 @@ module.exports = {
   getAllUsers,
   checkUserInfo,
   myVacations,
+  updateVacationState,
 };

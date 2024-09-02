@@ -18,6 +18,12 @@ const userTeacherSchema = new mongoose.Schema(
       unique: true,
     },
 
+    subject: {
+      type: String,
+      required: true,
+      default: '',
+    },
+
     email: {
       type: String,
       minLength: 3,
@@ -85,6 +91,7 @@ const userTeacherSchema = new mongoose.Schema(
     gender: {
       type: String,
       required: [true, 'please provide Gender'],
+      default: 'male',
     },
   },
   {

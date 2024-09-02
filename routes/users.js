@@ -11,6 +11,7 @@ const {
   checkUserInfo,
   myVacations,
   updateVacationState,
+  getMyTeachers,
 } = require('../Controllers/users');
 
 const express = require('express');
@@ -42,5 +43,6 @@ Router.patch(
   authenticaiton,
   updateVacationState
 );
+Router.get('/student/myTeachers', authenticaiton, getMyTeachers);
 
 module.exports = Router;

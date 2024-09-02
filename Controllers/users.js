@@ -740,6 +740,34 @@ const updateVacationState = async (req, res) => {
   });
 };
 
+const getMyTeachers = async (req, res) => {
+  // STUDENT INFO
+  const studentId = req.user.userId;
+
+  if (!studentId) {
+    return badRequestError(res, 'pleaseProvideID');
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(studentId)) {
+    return badRequestError(res, 'pleaseProvideCorrectID');
+  }
+
+  const studentInfo = await STUDENT_SCHEMA.findOne({ _id: studentId });
+  const { className, classType } = studentInfo;
+  // STUDENT TEACHER INFO
+  const teacherInfo = await TEACHER_SCHEMA.find({
+    teacherClasses: {
+      $elemMatch: { className, classType },
+    },
+  }).select('name image role subject gender');
+
+  res.json({
+    data: teacherInfo,
+    msg: '',
+    authenticatedUser: res.locals.user,
+  });
+};
+
 module.exports = {
   vacationRequest,
   getWeeklyVacationRequest,
@@ -753,4 +781,5 @@ module.exports = {
   checkUserInfo,
   myVacations,
   updateVacationState,
+  getMyTeachers,
 };

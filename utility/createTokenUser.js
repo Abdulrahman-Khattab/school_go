@@ -35,6 +35,10 @@ const createUserToken = (user) => {
     user.gender = '';
   }
 
+  if (!user.subject) {
+    user.subject = '';
+  }
+
   return {
     name: user.name,
     role: user.role,
@@ -50,6 +54,7 @@ const createUserToken = (user) => {
     age: user.age,
     vactions: user.vacations,
     gender: user.gender,
+    subject: user.subject,
   };
 };
 

@@ -2,6 +2,7 @@ const STUDENT_SCHEMA = require('../model/user_students');
 const TEACHER_SCHEMA = require('../model/user_teacher');
 const CONTROLLER_SCHEMA = require('../model/user_controller');
 const VACATION_SCHEMA = require('../model/vaction');
+const StudentMarks = require('../model/student_marks');
 const mongoose = require('mongoose');
 const path = require('path');
 const fs = require('fs');
@@ -9,6 +10,7 @@ require('dotenv').config();
 const admin = require('firebase-admin');
 const { v4: uuidv4 } = require('uuid'); // Import UUID
 const generateRandomString = require('../utility/randomGenerator');
+const check_ID = require('../utility/check_ID');
 
 // Check if the default app is already initialized
 if (!admin.apps.length) {
@@ -740,6 +742,10 @@ const updateVacationState = async (req, res) => {
   });
 };
 
+//============================
+//STUDENT FUNCTION
+//============================
+
 const getMyTeachers = async (req, res) => {
   // STUDENT INFO
   const studentId = req.user.userId;
@@ -768,6 +774,43 @@ const getMyTeachers = async (req, res) => {
   });
 };
 
+//============================
+//TEACHER FUNCTION
+//============================
+
+const getMyStudentsGrade = async (req, res) => {
+  const teacherId = req.user.userId;
+  check_ID(res, teacherId);
+  const teacherInfo = await TEACHER_SCHEMA.findOne({ _id: teacherId });
+  const { teacherClasses } = teacherInfo;
+
+  const myStudentsGrade = await STUDENT_SCHEMA.find({
+    $or: teacherClasses.map(({ className, classType }) => ({
+      className,
+      classType,
+    })),
+  });
+
+  const studentWithTheirMarks = await Promise.all(
+    myStudentsGrade.map(async (student) => {
+      const studentWithGrade = await StudentMarks.find({
+        username: student.username,
+      });
+
+      return {
+        studentInfo: student,
+        studentGrade: studentWithGrade,
+      };
+    })
+  );
+
+  res.json({
+    data: studentWithTheirMarks,
+    msg: '',
+    authenticatedUser: res.locals.user,
+  });
+};
+
 module.exports = {
   vacationRequest,
   getWeeklyVacationRequest,
@@ -782,4 +825,5 @@ module.exports = {
   myVacations,
   updateVacationState,
   getMyTeachers,
+  getMyStudentsGrade,
 };

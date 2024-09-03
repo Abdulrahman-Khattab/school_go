@@ -12,6 +12,7 @@ const {
   myVacations,
   updateVacationState,
   getMyTeachers,
+  getMyStudentsGrade,
 } = require('../Controllers/users');
 
 const express = require('express');
@@ -43,6 +44,16 @@ Router.patch(
   authenticaiton,
   updateVacationState
 );
+
+//============================
+//TEACHER Routes
+//============================
+
+Router.get('/teachers/myStudentGrade', authenticaiton, getMyStudentsGrade);
+
+//============================
+//STUDENT Routes
+//============================
 Router.get('/student/myTeachers', authenticaiton, getMyTeachers);
 
 module.exports = Router;

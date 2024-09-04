@@ -7,6 +7,13 @@ const exam_schedule_schema = new mongoose.Schema(
       required: [true, 'pleaseProvideExamDate'],
     },
 
+    teacherId: {
+      type: mongoose.Types.ObjectId,
+      ref: 'TEACHER_SCHEMA',
+      required: true,
+      default: '',
+    },
+
     examLecture: {
       type: String,
       required: [true, 'PleaseProvideExamLecture'],

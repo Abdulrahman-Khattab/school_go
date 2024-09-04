@@ -17,6 +17,7 @@ const books_router = require('./routes/books');
 const homeWorks_router = require('./routes/homeWorks');
 const quiz_router = require('./routes/quiz');
 const resource_router = require('./routes/resource');
+const attendance_router = require('./routes/attendanceForm');
 
 // using main utility library
 const app = express();
@@ -38,6 +39,7 @@ app.use('/schoolSystem/v1/api/books', books_router);
 app.use('/schoolSystem/v1/api/homeWorks', homeWorks_router);
 app.use('/schoolSystem/v1/api/quiz', quiz_router);
 app.use('/schoolSystem/v1/api/resource', resource_router);
+app.use('/schoolSystem/v1/api/attendanceForm', attendance_router);
 
 // front-page (test mode only)
 app.get('/', async (req, res) => {

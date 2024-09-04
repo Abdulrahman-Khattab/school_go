@@ -1,10 +1,16 @@
 const Exam_schedule = require('../model/exam_schedule');
 const STUDENT_SCHEMA = require('../model/user_students');
+const TEACHER_SCHEMA = require('../model/user_teacher');
 const mongoose = require('mongoose');
-const { badRequestError, notFoundError } = require('../errors_2');
+const {
+  badRequestError,
+  notFoundError,
+  notFoundError2,
+} = require('../errors_2');
+const check_ID = require('../utility/check_ID');
 
 const getALLExamsScheduled = async (req, res) => {
-  const allExams = await Exam_schedule.find({}).se;
+  const allExams = await Exam_schedule.find({});
   if (!allExams) {
     return badRequestError(res, 'NoExamsFoundINDB');
   }
@@ -66,6 +72,8 @@ const createExamInfo = async (req, res) => {
     examType,
   } = req.body;
 
+  const teacherId = req.user.userId;
+
   if (!examDate) {
     return badRequestError(res, 'PleaseProvideExamDate');
   }
@@ -88,7 +96,10 @@ const createExamInfo = async (req, res) => {
     return badRequestError(res, 'PleaseProvideExamType');
   }
 
-  const examInfo = await Exam_schedule.create({ ...req.body });
+  const examInfo = await Exam_schedule.create({
+    ...req.body,
+    teacherId: teacherId,
+  });
 
   if (!examInfo) {
     return badRequestError(res, 'SomethingWentWrongPleaseTryAgain');
@@ -142,10 +153,21 @@ const updateExamInformation = async (req, res) => {
   res.json({ data: updatedExam, msg: '', authenticatedUser: res.locals.user });
 };
 
+const getTeacherExams = async (req, res) => {
+  const teacherId = req.user.userId;
+  check_ID(res, teacherId);
+  const teacherInfo = await TEACHER_SCHEMA.findOne({ _id: teacherId });
+  const teacherExams = await Exam_schedule.find({ teacherId: teacherId });
+  notFoundError2(res, teacherExams, 'ThereIsNoExamsFromThisTeacher');
+
+  res.json({ data: teacherExams, msg: '', authenticatedUser: res.locals.user });
+};
+
 module.exports = {
   getALLExamsScheduled,
   getMyExams,
   createExamInfo,
   deleteExamInformation,
   updateExamInformation,
+  getTeacherExams,
 };

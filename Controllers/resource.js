@@ -1,8 +1,13 @@
 const mongoose = require('mongoose');
 const Resource = require('../model/resource');
-const { notFoundError, badRequestError } = require('../errors_2');
+const {
+  notFoundError,
+  badRequestError,
+  notFoundError2,
+} = require('../errors_2');
 const TEACHER_SCHEMA = require('../model/user_teacher');
 const STUDENT_SCHEMA = require('../model/user_students');
+const check_ID = require('../utility/check_ID');
 
 const createResource = async (req, res) => {
   const teacherId = req.user.userId;
@@ -202,10 +207,24 @@ const updateResource = async (req, res) => {
   });
 };
 
+const teacherResource = async (req, res) => {
+  const teacherId = req.user.userId;
+  check_ID(res, teacherId);
+  const teacherInfo = await TEACHER_SCHEMA.findOne({ _id: teacherId });
+  const teacherResourceInfo = await Resource.find({ teacherId: teacherId });
+  notFoundError2(res, teacherResourceInfo, 'thisTeacherHaveNoResource');
+  res.json({
+    data: teacherResourceInfo,
+    msg: '',
+    authenticatedUser: res.locals.user,
+  });
+};
+
 module.exports = {
   createResource,
   getMyResource,
   getAllResources,
   deleteResource,
   updateResource,
+  teacherResource,
 };

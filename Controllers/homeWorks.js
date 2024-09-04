@@ -3,6 +3,7 @@ const Homework = require('../model/homeWorks');
 const { notFoundError, badRequestError } = require('../errors_2');
 const TEACHER_SCHEMA = require('../model/user_teacher');
 const STUDENT_SCHEMA = require('../model/user_students');
+const check_ID = require('../utility/check_ID');
 
 const createHomeWork = async (req, res) => {
   let allowedClasses = [];
@@ -257,10 +258,25 @@ const updateHomework = async (req, res) => {
   res.json({ data: homeWork, msg: '', authenticatedUser: res.locals.user });
 };
 
+const getTeacherHomeworks = async (req, res) => {
+  const teacherId = req.user.userId;
+  check_ID(res, teacherId);
+  const teacherInfo = await TEACHER_SCHEMA.findOne({ _id: teacherId });
+
+  const myHomeWorksInfo = await Homework.find({ teacherId: teacherId });
+
+  res.json({
+    data: myHomeWorksInfo,
+    msg: '',
+    authenticatedUser: res.locals.user,
+  });
+};
+
 module.exports = {
   createHomeWork,
   getMyHomeWorks,
   getAllHomeWorks,
   deleteHomeWork,
   updateHomework,
+  getTeacherHomeworks,
 };

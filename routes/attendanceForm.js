@@ -13,7 +13,7 @@ const express = require('express');
 const Router = express.Router();
 
 Router.post('/', authenticaiton, createAttendanceForm);
-Router.get('/getStudentsForTeacher', authenticaiton, getStudentsForTeacher);
+Router.post('/getStudentsForTeacher', authenticaiton, getStudentsForTeacher);
 Router.get(
   '/getTeacherSubjectAttendance',
   authenticaiton,

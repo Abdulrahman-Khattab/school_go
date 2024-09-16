@@ -19,7 +19,7 @@ Router.get(
   authenticaiton,
   getTeacherSubjectAttendance
 );
-Router.get(
+Router.post(
   '/getAllStudentsOfSpeceficClass',
   authenticaiton,
   getAllStudentsOfSpeceficClass

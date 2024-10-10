@@ -798,7 +798,6 @@ const getMyStudentsGrade = async (req, res) => {
       });
 
       return {
-        studentInfo: student,
         studentGrade: studentWithGrade,
       };
     })

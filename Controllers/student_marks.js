@@ -5,9 +5,8 @@ const { StatusCodes } = require('http-status-codes');
 const STUDENT_SCHEMA = require('../model/user_students');
 
 const createStudentMarks = async (req, res) => {
-  const { studentName, subjectTitle, examType, studentMark, username } =
-    req.body;
-  if (!studentName) {
+  const { students, subjectTitle, examType } = req.body;
+  if (students.length < 1) {
     return badRequestError(res, 'pleaseProvideStudentName');
   }
   if (!subjectTitle) {
@@ -15,12 +14,6 @@ const createStudentMarks = async (req, res) => {
   }
   if (!examType) {
     return badRequestError(res, 'pleaseProvideExamType');
-  }
-  if (!studentMark) {
-    return badRequestError(res, 'pleaseProvideStudentMark');
-  }
-  if (!username) {
-    return badRequestError(res, 'pleaseProvideusername');
   }
 
   const studentMarkRecord = await StudentMarks.create({ ...req.body });
@@ -38,14 +31,14 @@ const getStudentMarks = async (req, res) => {
   const studentQuery = {};
 
   if (studentName) {
-    studentQuery.studentName = studentName;
+    studentQuery['students.studentName'] = studentName;
   }
   if (examType) {
     studentQuery.examType = examType;
   }
 
   if (studentMark) {
-    studentQuery.studentMark = studentMark;
+    studentQuery['students.studentMark'] = studentMark;
   }
   if (subjectTitle) {
     studentQuery.subjectTitle = subjectTitle;
@@ -98,7 +91,7 @@ const getMyMarks = async (req, res) => {
   }
 
   const studentMarks = await StudentMarks.find({
-    username: studentInfo.username,
+    ['students.username']: studentInfo.username,
     ...studentQuery,
   });
 
@@ -120,9 +113,18 @@ const deleteStudentMark = async (req, res) => {
     return notFoundError(res, 'pleaseReturnValidIDFormat');
   }
 
-  const deletedSutdentGrade = await StudentMarks.findOneAndDelete({
-    _id: id,
-  });
+  const { username } = req.body;
+  console.log(username);
+
+  const deletedSutdentGrade = await StudentMarks.findOneAndUpdate(
+    { _id: id },
+    {
+      $pull: {
+        students: { username },
+      },
+    },
+    { new: true }
+  );
 
   if (!deletedSutdentGrade) {
     return badRequestError(
@@ -140,35 +142,56 @@ const deleteStudentMark = async (req, res) => {
 
 const updateStudentMarks = async (req, res) => {
   const { id } = req.params;
-  const { studentName, subjectTitle, examType, studentMark } = req.body;
+  const { subjectTitle, examType, studentsToUpdate } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return notFoundError(res, 'pleaseReturnValidIDFormat');
   }
   const studentUpdateObject = {};
 
-  if (studentName) {
-    studentUpdateObject.studentName = studentName;
-  }
   if (examType) {
     studentUpdateObject.examType = examType;
   }
 
-  if (studentMark) {
-    studentUpdateObject.studentMark = studentMark;
-  }
   if (subjectTitle) {
     studentUpdateObject.subjectTitle = subjectTitle;
   }
 
-  const updatedStudentGradeInformation = await StudentMarks.findOneAndUpdate(
+  if (studentsToUpdate.length > 0 && studentsToUpdate) {
+    for (const student of studentsToUpdate) {
+      const { username, newUsername, studentMark } = student;
+      const studentUpdateInfo = {};
+      if (newUsername) {
+        studentUpdateInfo['students.$.username'] = newUsername;
+      }
+      if (studentMark) {
+        studentUpdateInfo['students.$.studentMark'] = studentMark;
+      }
+      console.log(studentUpdateInfo);
+
+      await StudentMarks.findOneAndUpdate(
+        {
+          _id: id,
+          'students.username': username,
+        },
+        {
+          $set: studentUpdateInfo,
+        },
+        { runValidators: true, new: true }
+      );
+    }
+  }
+
+  const updatedStudentsExamInformation = await StudentMarks.findOneAndUpdate(
     { _id: id },
-    studentUpdateObject,
+    { $set: studentUpdateObject },
     {
       runValidators: true,
       new: true,
     }
   );
+
+  const updatedStudentGradeInformation = await StudentMarks.findById(id);
 
   if (!updatedStudentGradeInformation) {
     return badRequestError(res, 'somethingWrongHappendedPleaseTryAgain');
@@ -181,10 +204,39 @@ const updateStudentMarks = async (req, res) => {
   });
 };
 
+const deleteStudnetsExam = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return badRequestError(res, 'pleaseProvideStudentMarkID ');
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return notFoundError(res, 'pleaseReturnValidIDFormat');
+  }
+
+  const deletedExamRecord = await StudentMarks.findOneAndDelete({
+    _id: id,
+  });
+  if (!deletedExamRecord) {
+    return badRequestError(
+      res,
+      'DeletedExamRecordHasNotGoneAsExpectedTryAgainLater'
+    );
+  }
+
+  res.status(StatusCodes.OK).json({
+    data: deletedExamRecord,
+    msg: '',
+    authenticatedUser: res.locals.user,
+  });
+};
+
 module.exports = {
   createStudentMarks,
   getStudentMarks,
   deleteStudentMark,
   updateStudentMarks,
   getMyMarks,
+  deleteStudnetsExam,
 };

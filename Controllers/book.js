@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Books = require('../model/books');
 const STUDENT_SCHEMA = require('../model/user_students');
+const TEACHER_SCHEMA = require('../model/user_teacher');
 const path = require('path');
 const fs = require('fs');
 const { notFoundError, badRequestError } = require('../errors_2');
@@ -423,10 +424,30 @@ const updateBook = async (req, res) => {
   });
 };
 
+const getBookForTeacher = async (req, res) => {
+  const { bookClass } = req.body;
+  if (!bookClass) {
+    return badRequestError(res, 'pleaseProvideBookClass');
+  }
+
+  const teacherBooks = await Books.find({ bookClass: bookClass });
+
+  if (!teacherBooks) {
+    return badRequestError(res, 'NoBookFoundForThisClass');
+  }
+
+  res.json({
+    data: teacherBooks,
+    msg: '',
+    authenticatedUser: res.locals.user,
+  });
+};
+
 module.exports = {
   createBook,
   getMyBooks,
   deleteBook,
   getAllBooks,
   updateBook,
+  getBookForTeacher,
 };

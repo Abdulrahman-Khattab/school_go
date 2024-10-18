@@ -19,6 +19,7 @@ const quiz_router = require('./routes/quiz');
 const resource_router = require('./routes/resource');
 const attendance_router = require('./routes/attendanceForm');
 const teacher_weekly_schedule_router = require('./routes/teacher_weekly_schedules');
+const notifications_router = require('./routes/notification');
 
 // using main utility library
 const app = express();
@@ -45,6 +46,7 @@ app.use(
   '/schoolSystem/v1/api/teachersSchedule',
   teacher_weekly_schedule_router
 );
+app.use('/schoolSystem/v1/api/notifications', notifications_router);
 
 // front-page (test mode only)
 app.get('/', async (req, res) => {

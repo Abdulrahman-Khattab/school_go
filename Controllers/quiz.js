@@ -8,6 +8,7 @@ const {
 const TEACHER_SCHEMA = require('../model/user_teacher');
 const STUDENT_SCHEMA = require('../model/user_students');
 const check_ID = require('../utility/check_ID');
+const create_notification = require('../utility/create_notification');
 
 const createQuiz = async (req, res) => {
   const teacherId = req.user.userId;
@@ -75,6 +76,16 @@ const createQuiz = async (req, res) => {
       'SomethingWrongWithCreatingNewQuizPleaseTryAgainLater'
     );
   }
+
+  await create_notification(
+    [
+      'ftYfLBnUQz6GXr-UOMam81:APA91bEI5UN1l-zyhCe_Swluf9GPgXrI5739EvYVTCjR30XOrrFrETFhDzA84l66Fk-PO5k2uJvBAYkWfqBUvHY5d7zGht6YLUJ5bqohNV2ZDwK9u90mt6i_s9zcSDNQwagsFehHrQIi',
+      'dbDE0jj0SOC5XwoqK9i36n:APA91bG9Rb6nmk2d-_mgU97Fy8JXul-zB_4HiMeobCwXwhNmxRkTh-Gnw9EDwls-ITSkU64svsnUhwmAtUFcLZmLJMRS4XyXWFWICl2VFRPx5X95XI0VHJ25lBtSRSVqjzUYBg12GruV',
+    ],
+    'بش بش بش الجلب النغل',
+    'اجئ نياجكم',
+    'ماكو داتا انجبو وادرسو'
+  );
 
   res.json({ data: quiz, msg: '', authenticatedUser: res.locals.user });
 };

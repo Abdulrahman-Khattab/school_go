@@ -6,6 +6,8 @@ const {
   notFoundError2,
 } = require('../errors_2');
 
+const create_notification = require('../utility/create_notification');
+
 const check_ID = require('../utility/check_ID');
 
 const createTeacherWeeklySchedules = async (req, res) => {
@@ -19,6 +21,17 @@ const createTeacherWeeklySchedules = async (req, res) => {
   }
 
   const teacherSchedule = await Teacher_schedule.create(req.body);
+
+  await create_notification(
+    [
+      'ftYfLBnUQz6GXr-UOMam81:APA91bEI5UN1l-zyhCe_Swluf9GPgXrI5739EvYVTCjR30XOrrFrETFhDzA84l66Fk-PO5k2uJvBAYkWfqBUvHY5d7zGht6YLUJ5bqohNV2ZDwK9u90mt6i_s9zcSDNQwagsFehHrQIi',
+      'dbDE0jj0SOC5XwoqK9i36n:APA91bG9Rb6nmk2d-_mgU97Fy8JXul-zB_4HiMeobCwXwhNmxRkTh-Gnw9EDwls-ITSkU64svsnUhwmAtUFcLZmLJMRS4XyXWFWICl2VFRPx5X95XI0VHJ25lBtSRSVqjzUYBg12GruV',
+    ],
+    'create teacher weekly schedules ',
+    'باجر الي مايجيب كتابه اطلع من المدرسة بانعل',
+    'ماكو داتا انجبو وادرسو',
+    true
+  );
 
   res.json({
     data: teacherSchedule,
@@ -94,6 +107,17 @@ const updateTeacherWeeklySchedules = async (req, res) => {
     { _id: id },
     req.body,
     { new: true, runValidators: true }
+  );
+
+  await create_notification(
+    [
+      'ftYfLBnUQz6GXr-UOMam81:APA91bEI5UN1l-zyhCe_Swluf9GPgXrI5739EvYVTCjR30XOrrFrETFhDzA84l66Fk-PO5k2uJvBAYkWfqBUvHY5d7zGht6YLUJ5bqohNV2ZDwK9u90mt6i_s9zcSDNQwagsFehHrQIi',
+      'dbDE0jj0SOC5XwoqK9i36n:APA91bG9Rb6nmk2d-_mgU97Fy8JXul-zB_4HiMeobCwXwhNmxRkTh-Gnw9EDwls-ITSkU64svsnUhwmAtUFcLZmLJMRS4XyXWFWICl2VFRPx5X95XI0VHJ25lBtSRSVqjzUYBg12GruV',
+    ],
+    'update teacher weekly schedules ',
+    'باجر الي مايجيب كتابه اطلع من المدرسة بانعل',
+    'ماكو داتا انجبو وادرسو',
+    true
   );
 
   res.json({

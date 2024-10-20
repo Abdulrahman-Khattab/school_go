@@ -34,20 +34,24 @@ const create_notification = async (
   tokens,
   notificationTitle,
   notificationBody,
-  extraData = ''
+  extraData = '',
+  condition
 ) => {
-  const payload = {
-    notification: {
-      title: notificationTitle,
-      body: notificationBody,
-    },
-    data: {
-      extraData: extraData,
-      clickAction: 'FLUTTER_NOTIFICATION_CLICK',
-    },
-  };
+  if (condition) {
+    const payload = {
+      notification: {
+        title: notificationTitle,
+        body: notificationBody,
+      },
+      data: {
+        extraData: extraData,
+        clickAction: 'FLUTTER_NOTIFICATION_CLICK',
+      },
+    };
 
-  await sendNotification(tokens, payload);
+    await sendNotification(tokens, payload);
+    return;
+  } else return;
 };
 
 module.exports = create_notification;

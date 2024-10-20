@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const notification_schema = new mongoose.schema(
+const notification_schema = new mongoose.Schema(
   {
     notification: {
       type: [

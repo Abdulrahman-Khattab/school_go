@@ -8,6 +8,7 @@ const {
   notFoundError2,
 } = require('../errors_2');
 const check_ID = require('../utility/check_ID');
+const create_notification = require('../utility/create_notification');
 
 const getALLExamsScheduled = async (req, res) => {
   const allExams = await Exam_schedule.find({});
@@ -105,6 +106,17 @@ const createExamInfo = async (req, res) => {
     return badRequestError(res, 'SomethingWentWrongPleaseTryAgain');
   }
 
+  await create_notification(
+    [
+      'ftYfLBnUQz6GXr-UOMam81:APA91bEI5UN1l-zyhCe_Swluf9GPgXrI5739EvYVTCjR30XOrrFrETFhDzA84l66Fk-PO5k2uJvBAYkWfqBUvHY5d7zGht6YLUJ5bqohNV2ZDwK9u90mt6i_s9zcSDNQwagsFehHrQIi',
+      'dbDE0jj0SOC5XwoqK9i36n:APA91bG9Rb6nmk2d-_mgU97Fy8JXul-zB_4HiMeobCwXwhNmxRkTh-Gnw9EDwls-ITSkU64svsnUhwmAtUFcLZmLJMRS4XyXWFWICl2VFRPx5X95XI0VHJ25lBtSRSVqjzUYBg12GruV',
+    ],
+    'ضفنا امتحان ة',
+    'باجر الي مايجيب كتابه اطلع من المدرسة بانعل',
+    'ماكو داتا انجبو وادرسو',
+    true
+  );
+
   res.json({ data: examInfo, msg: '', authenticatedUser: res.locals.user });
 };
 
@@ -149,6 +161,17 @@ const updateExamInformation = async (req, res) => {
   if (!updatedExam) {
     return notFoundError(res, 'ThereIsNoSuchExamInDataBase');
   }
+
+  await create_notification(
+    [
+      'ftYfLBnUQz6GXr-UOMam81:APA91bEI5UN1l-zyhCe_Swluf9GPgXrI5739EvYVTCjR30XOrrFrETFhDzA84l66Fk-PO5k2uJvBAYkWfqBUvHY5d7zGht6YLUJ5bqohNV2ZDwK9u90mt6i_s9zcSDNQwagsFehHrQIi',
+      'dbDE0jj0SOC5XwoqK9i36n:APA91bG9Rb6nmk2d-_mgU97Fy8JXul-zB_4HiMeobCwXwhNmxRkTh-Gnw9EDwls-ITSkU64svsnUhwmAtUFcLZmLJMRS4XyXWFWICl2VFRPx5X95XI0VHJ25lBtSRSVqjzUYBg12GruV',
+    ],
+    'حدثنا جدول الامتحانات شوفوه',
+    'باجر الي مايجيب كتابه اطلع من المدرسة بانعل',
+    'ماكو داتا انجبو وادرسو',
+    true
+  );
 
   res.json({ data: updatedExam, msg: '', authenticatedUser: res.locals.user });
 };

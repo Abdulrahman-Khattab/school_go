@@ -1,5 +1,13 @@
 const mongoose = require('mongoose');
 
+const emptyLecture = {
+  className: '',
+  classType: '',
+  lectureTime: null,
+  lecture: '',
+  lectureNumber: 0,
+};
+
 const teacher_weekly_schedules_schema = new mongoose.Schema(
   {
     teacherUsername: {
@@ -26,9 +34,14 @@ const teacher_weekly_schedules_schema = new mongoose.Schema(
             type: String,
             required: true,
           },
+          lectureNumber: {
+            type: Number,
+            required: true,
+          },
         },
       ],
       required: [true, 'please provide sunday lectures schedule'],
+      default: [],
     },
 
     monday: {
@@ -50,9 +63,14 @@ const teacher_weekly_schedules_schema = new mongoose.Schema(
             type: String,
             required: true,
           },
+          lectureNumber: {
+            type: Number,
+            required: true,
+          },
         },
       ],
       required: [true, 'please provide monday lectures schedule'],
+      default: [],
     },
 
     tuseday: {
@@ -74,9 +92,14 @@ const teacher_weekly_schedules_schema = new mongoose.Schema(
             type: String,
             required: true,
           },
+          lectureNumber: {
+            type: Number,
+            required: true,
+          },
         },
       ],
       required: [true, 'please provide tuseday lectures schedule'],
+      default: [],
     },
 
     wednesday: {
@@ -98,9 +121,14 @@ const teacher_weekly_schedules_schema = new mongoose.Schema(
             type: String,
             required: true,
           },
+          lectureNumber: {
+            type: Number,
+            required: true,
+          },
         },
       ],
       required: [true, 'please provide wednesday lectures schedule'],
+      default: [],
     },
 
     thursday: {
@@ -122,9 +150,14 @@ const teacher_weekly_schedules_schema = new mongoose.Schema(
             type: String,
             required: true,
           },
+          lectureNumber: {
+            type: Number,
+            required: true,
+          },
         },
       ],
       required: [true, 'please provide thursday lectures schedule'],
+      default: [],
     },
     friday: {
       type: [
@@ -143,6 +176,10 @@ const teacher_weekly_schedules_schema = new mongoose.Schema(
           },
           lecture: {
             type: String,
+            required: true,
+          },
+          lectureNumber: {
+            type: Number,
             required: true,
           },
         },
@@ -170,6 +207,10 @@ const teacher_weekly_schedules_schema = new mongoose.Schema(
             type: String,
             required: true,
           },
+          lectureNumber: {
+            type: Number,
+            required: true,
+          },
         },
       ],
       required: [true, 'please provide saturday lectures schedule'],
@@ -178,6 +219,33 @@ const teacher_weekly_schedules_schema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+const fillEmptyLectures = (lectures) => {
+  const maxLectures = 8;
+
+  // Check if lectures is an array, if not, return an empty filled array
+  if (!Array.isArray(lectures)) {
+    return Array(maxLectures).fill(emptyLecture);
+  }
+
+  const filledLectures = [...lectures]; // Start with provided lectures
+  while (filledLectures.length < maxLectures) {
+    filledLectures.push(emptyLecture); // Add empty lecture until the max is reached
+  }
+
+  return filledLectures; // Return the filled array
+};
+
+teacher_weekly_schedules_schema.pre('save', function (next) {
+  this.sunday = fillEmptyLectures(this.sunday);
+  this.monday = fillEmptyLectures(this.monday);
+  this.tuesday = fillEmptyLectures(this.tuesday);
+  this.wednesday = fillEmptyLectures(this.wednesday);
+  this.thursday = fillEmptyLectures(this.thursday);
+  this.friday = fillEmptyLectures(this.friday);
+  this.saturday = fillEmptyLectures(this.saturday);
+  next(); // Proceed to save the document
+});
 
 module.exports = mongoose.model(
   'Teacher_schedule',

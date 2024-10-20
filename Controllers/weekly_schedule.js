@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const { badRequestError, notFoundError } = require('../errors_2');
 const Weekly_schedule = require('../model/weekly_schedule');
 const STUDENT_SCHEMA = require('../model/user_students');
+const create_notification = require('../utility/create_notification');
 
 const createWeeklySchedule = async (req, res) => {
   const {
@@ -52,6 +53,17 @@ const createWeeklySchedule = async (req, res) => {
   }
 
   const weeklySchedule = await Weekly_schedule.create(req.body);
+
+  await create_notification(
+    [
+      'ftYfLBnUQz6GXr-UOMam81:APA91bEI5UN1l-zyhCe_Swluf9GPgXrI5739EvYVTCjR30XOrrFrETFhDzA84l66Fk-PO5k2uJvBAYkWfqBUvHY5d7zGht6YLUJ5bqohNV2ZDwK9u90mt6i_s9zcSDNQwagsFehHrQIi',
+      'dbDE0jj0SOC5XwoqK9i36n:APA91bG9Rb6nmk2d-_mgU97Fy8JXul-zB_4HiMeobCwXwhNmxRkTh-Gnw9EDwls-ITSkU64svsnUhwmAtUFcLZmLJMRS4XyXWFWICl2VFRPx5X95XI0VHJ25lBtSRSVqjzUYBg12GruV',
+    ],
+    'create student weekly schedules ',
+    'باجر الي مايجيب كتابه اطلع من المدرسة بانعل',
+    'ماكو داتا انجبو وادرسو',
+    true
+  );
 
   res.json({
     data: weeklySchedule,
@@ -158,6 +170,17 @@ const updateWeeklySchedule = async (req, res) => {
   if (!weeklySchedule) {
     return notFoundError(res, 'pleaseProvideValidId');
   }
+
+  await create_notification(
+    [
+      'ftYfLBnUQz6GXr-UOMam81:APA91bEI5UN1l-zyhCe_Swluf9GPgXrI5739EvYVTCjR30XOrrFrETFhDzA84l66Fk-PO5k2uJvBAYkWfqBUvHY5d7zGht6YLUJ5bqohNV2ZDwK9u90mt6i_s9zcSDNQwagsFehHrQIi',
+      'dbDE0jj0SOC5XwoqK9i36n:APA91bG9Rb6nmk2d-_mgU97Fy8JXul-zB_4HiMeobCwXwhNmxRkTh-Gnw9EDwls-ITSkU64svsnUhwmAtUFcLZmLJMRS4XyXWFWICl2VFRPx5X95XI0VHJ25lBtSRSVqjzUYBg12GruV',
+    ],
+    'create update weekly schedules ',
+    'باجر الي مايجيب كتابه اطلع من المدرسة بانعل',
+    'ماكو داتا انجبو وادرسو',
+    true
+  );
 
   res.json({
     data: weeklySchedule,

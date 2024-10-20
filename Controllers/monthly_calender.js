@@ -4,6 +4,7 @@ const STUDENT_SCHEMA = require('../model/user_students');
 const TEACHER_SCHEMA = require('../model/user_teacher');
 const CONTROLLER_SCHEMA = require('../model/user_controller');
 const mongoose = require('mongoose');
+const create_notification = require('../utility/create_notification');
 
 const createCalenderNote = async (req, res) => {
   const { schoolNote, classesNote, studentNote, teacherNote, note, noteTime } =
@@ -22,6 +23,17 @@ const createCalenderNote = async (req, res) => {
   if (!calenderNote) {
     return badRequestError(res, 'SomethingWentWrongPleaseTryAgainLater');
   }
+
+  await create_notification(
+    [
+      'ftYfLBnUQz6GXr-UOMam81:APA91bEI5UN1l-zyhCe_Swluf9GPgXrI5739EvYVTCjR30XOrrFrETFhDzA84l66Fk-PO5k2uJvBAYkWfqBUvHY5d7zGht6YLUJ5bqohNV2ZDwK9u90mt6i_s9zcSDNQwagsFehHrQIi',
+      'dbDE0jj0SOC5XwoqK9i36n:APA91bG9Rb6nmk2d-_mgU97Fy8JXul-zB_4HiMeobCwXwhNmxRkTh-Gnw9EDwls-ITSkU64svsnUhwmAtUFcLZmLJMRS4XyXWFWICl2VFRPx5X95XI0VHJ25lBtSRSVqjzUYBg12GruV',
+    ],
+    'Create monthly_calender',
+    'باجر الي مايجيب كتابه اطلع من المدرسة بانعل',
+    'ماكو داتا انجبو وادرسو',
+    true
+  );
 
   res.json({ data: calenderNote, msg: '', authenticatedUser: res.locals.user });
 };
@@ -191,6 +203,17 @@ const updateMonthlyCalenderNote = async (req, res) => {
   if (!updateMonthlyCalenderNote) {
     return notFoundError(res, 'ThereIsNoSuchMonthlyCalenderNoteInDataBase');
   }
+
+  await create_notification(
+    [
+      'ftYfLBnUQz6GXr-UOMam81:APA91bEI5UN1l-zyhCe_Swluf9GPgXrI5739EvYVTCjR30XOrrFrETFhDzA84l66Fk-PO5k2uJvBAYkWfqBUvHY5d7zGht6YLUJ5bqohNV2ZDwK9u90mt6i_s9zcSDNQwagsFehHrQIi',
+      'dbDE0jj0SOC5XwoqK9i36n:APA91bG9Rb6nmk2d-_mgU97Fy8JXul-zB_4HiMeobCwXwhNmxRkTh-Gnw9EDwls-ITSkU64svsnUhwmAtUFcLZmLJMRS4XyXWFWICl2VFRPx5X95XI0VHJ25lBtSRSVqjzUYBg12GruV',
+    ],
+    'Update monthly_calender',
+    'باجر الي مايجيب كتابه اطلع من المدرسة بانعل',
+    'ماكو داتا انجبو وادرسو',
+    true
+  );
 
   res.json({
     data: updateMonthlyCalenderNote,

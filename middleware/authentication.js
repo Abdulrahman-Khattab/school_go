@@ -57,8 +57,7 @@ const authenticaiton = async (req, res, next) => {
 
   const user = { username, userId, role, name: validUser.name };
   //-------------- Check user notificationToken -------------------
-  let notificationToken = req.headers.notificationToken;
-  notificationToken = JSON.parse(notificationToken);
+  let notificationToken = req.headers.notificationtoken;
 
   console.log('Notfication TOKEN INFO : ', notificationToken);
   if (notificationToken) {

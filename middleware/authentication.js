@@ -11,6 +11,7 @@ const createUserToken = require('../utility/createTokenUser');
 
 const authenticaiton = async (req, res, next) => {
   let token = req.headers.token;
+  console.log('HEADERS IS : ', req.headers);
   if (token) {
     token = JSON.parse(token);
   }

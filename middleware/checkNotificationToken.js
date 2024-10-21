@@ -14,10 +14,7 @@ const checkNotificaitonToken = async (req, res, next) => {
   const username = req.user.username;
 
   if (!notificationToken) {
-    return unauthenticatedError(
-      res,
-      'PleaseCheckIfYouGotYourNotificationToken'
-    );
+    return next();
   }
 
   let user;

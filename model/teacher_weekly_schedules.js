@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const emptyLecture = {
   className: '',
   classType: '',
-  lectureTime: null,
+  lectureTime: '2024-10-21T00:00:00.000Z',
   lecture: '',
   lectureNumber: 0,
 };
@@ -73,7 +73,7 @@ const teacher_weekly_schedules_schema = new mongoose.Schema(
       default: [],
     },
 
-    tuseday: {
+    tuesday: {
       type: [
         {
           className: {

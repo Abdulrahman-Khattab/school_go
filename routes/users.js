@@ -17,6 +17,7 @@ const {
 
 const express = require('express');
 const { authenticaiton } = require('../middleware/authentication');
+const checkNotificaitonToken = require('../middleware/checkNotificationToken');
 const Router = express.Router();
 
 //============================
@@ -25,7 +26,12 @@ const Router = express.Router();
 
 Router.post('/vacaitionRequest', authenticaiton, vacationRequest);
 Router.post('/login', login);
-Router.get('/checkUserInfo', authenticaiton, checkUserInfo);
+Router.get(
+  '/checkUserInfo',
+  authenticaiton,
+  checkNotificaitonToken,
+  checkUserInfo
+);
 
 //============================
 //CONTROLLER Routes

@@ -17,6 +17,7 @@ const authenticaiton = async (req, res, next) => {
   if (!token) {
     token = req.signedCookies.token;
   }
+
   console.log(token);
   console.log('we are here');
 
@@ -54,7 +55,14 @@ const authenticaiton = async (req, res, next) => {
   //console.log(validUser);
 
   const user = { username, userId, role, name: validUser.name };
+  //-------------- Check user notificationToken -------------------
+  let notificationToken = req.headers.notificationToken;
+  console.log(notificationToken);
+  if (notificationToken) {
+    user.notificationToken = notificationToken;
+  }
 
+  //-------------- End of Check user notificationToken -------------------
   req.user = user;
 
   next();

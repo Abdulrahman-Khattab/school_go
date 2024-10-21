@@ -85,6 +85,25 @@ const userStudentSchema = new monggose.Schema(
       type: Boolean,
       default: false,
     },
+
+    userNotficationTokens: {
+      type: [
+        {
+          token: {
+            type: String,
+            required: true,
+          },
+          tokenCreatetionDate: {
+            type: Date,
+            required: true,
+          },
+          failureCount: {
+            type: Number,
+            default: 0,
+          },
+        },
+      ],
+    },
   },
   {
     timestamps: true,

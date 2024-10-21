@@ -44,13 +44,47 @@ const checkNotificaitonToken = async (req, res, next) => {
     return next();
   }
 
-  user.userNotficationTokens.push({
-    token: notificationToken,
-    tokenCreatetionDate: new Date(), // Add the current date
-    failureCount: 0,
-  });
+  // Update the user's notification tokens directly in the database
+  await CONTROLLER_SCHEMA.updateOne(
+    { username }, // Filter: find the user by username
+    {
+      $push: {
+        userNotficationTokens: {
+          token: notificationToken,
+          tokenCreatetionDate: new Date(), // Add the current date
+          failureCount: 0,
+        },
+      },
+    }
+  );
 
-  await user.save();
+  // If the user could be in other schemas (teacher or student), do similar updates
+  await TEACHER_SCHEMA.updateOne(
+    { username },
+    {
+      $push: {
+        userNotficationTokens: {
+          token: notificationToken,
+          tokenCreatetionDate: new Date(),
+          failureCount: 0,
+        },
+      },
+    }
+  );
+
+  await STUDENT_SCHEMA.updateOne(
+    { username },
+    {
+      $push: {
+        userNotficationTokens: {
+          token: notificationToken,
+          tokenCreatetionDate: new Date(),
+          failureCount: 0,
+        },
+      },
+    }
+  );
+
   next();
 };
 

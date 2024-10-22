@@ -3,18 +3,16 @@ const mongoose = require('mongoose');
 const notification_schema = new mongoose.Schema(
   {
     notification: {
-      type: [
-        {
-          title: {
-            type: String,
-            required: [true, 'Please provide notification title'],
-          },
-          body: {
-            type: String,
-            required: [true, 'Please provide notification body'],
-          },
+      type: {
+        title: {
+          type: String,
+          required: [true, 'Please provide notification title'],
         },
-      ],
+        body: {
+          type: String,
+          required: [true, 'Please provide notification body'],
+        },
+      },
     },
 
     tokens: {

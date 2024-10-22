@@ -57,7 +57,7 @@ const userControllerSchema = new monggose.Schema(
       required: [true, 'please provide Gender'],
     },
 
-    userNotficationTokens: {
+    userNotificationTokens: {
       type: [
         {
           token: {
@@ -67,10 +67,6 @@ const userControllerSchema = new monggose.Schema(
           tokenCreatetionDate: {
             type: Date,
             required: true,
-          },
-          failureCount: {
-            type: Number,
-            default: 0,
           },
         },
       ],

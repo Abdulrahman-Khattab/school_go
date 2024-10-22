@@ -39,6 +39,10 @@ const createUserToken = (user) => {
     user.subject = '';
   }
 
+  if (!user.userNotificationTokens) {
+    user.userNotificationTokens = '';
+  }
+
   return {
     name: user.name,
     role: user.role,
@@ -55,6 +59,7 @@ const createUserToken = (user) => {
     vactions: user.vacations,
     gender: user.gender,
     subject: user.subject,
+    userNotificationTokens: user.userNotificationTokens,
   };
 };
 

@@ -821,7 +821,27 @@ const getMyStudentsGrade = async (req, res) => {
     authenticatedUser: res.locals.user,
   });
 };
+
 //test test
+
+const testTokenFunction = async (req, res) => {
+  try {
+    const user = await TEACHER_SCHEMA.findOne({
+      userNotficationTokens: { $elemMatch: { token: 'abc123xyz456' } },
+    });
+
+    if (user) {
+      res.json({ user });
+      console.log('User found:', user);
+    } else {
+      res.json({ message: 'No user found with the specified token.' });
+      console.log('No user found with the specified token.');
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+    console.error('Error occurred:', error);
+  }
+};
 module.exports = {
   vacationRequest,
   getWeeklyVacationRequest,
@@ -837,4 +857,5 @@ module.exports = {
   updateVacationState,
   getMyTeachers,
   getMyStudentsGrade,
+  testTokenFunction,
 };

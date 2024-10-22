@@ -93,7 +93,7 @@ const userTeacherSchema = new mongoose.Schema(
       required: [true, 'please provide Gender'],
       default: 'male',
     },
-    userNotficationTokens: {
+    userNotificationTokens: {
       type: [
         {
           token: {
@@ -103,10 +103,6 @@ const userTeacherSchema = new mongoose.Schema(
           tokenCreatetionDate: {
             type: Date,
             required: true,
-          },
-          failureCount: {
-            type: Number,
-            default: 0,
           },
         },
       ],

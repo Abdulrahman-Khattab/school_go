@@ -86,7 +86,7 @@ const userStudentSchema = new monggose.Schema(
       default: false,
     },
 
-    userNotficationTokens: {
+    userNotificationTokens: {
       type: [
         {
           token: {
@@ -96,10 +96,6 @@ const userStudentSchema = new monggose.Schema(
           tokenCreatetionDate: {
             type: Date,
             required: true,
-          },
-          failureCount: {
-            type: Number,
-            default: 0,
           },
         },
       ],

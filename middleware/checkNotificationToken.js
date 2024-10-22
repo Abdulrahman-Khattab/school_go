@@ -34,9 +34,9 @@ const checkNotificaitonToken = async (req, res, next) => {
     return notFoundError(res, 'thisUserDoesNotExist');
   }
 
-  const { userNotficationTokens } = user;
+  const { userNotificationTokens } = user;
 
-  const tokenExist = userNotficationTokens.some(
+  const tokenExist = userNotificationTokens.some(
     (notification) => notification.token === notificationToken
   );
 
@@ -49,10 +49,9 @@ const checkNotificaitonToken = async (req, res, next) => {
     { username }, // Filter: find the user by username
     {
       $push: {
-        userNotficationTokens: {
+        userNotificationTokens: {
           token: notificationToken,
           tokenCreatetionDate: new Date(), // Add the current date
-          failureCount: 0,
         },
       },
     }
@@ -63,10 +62,9 @@ const checkNotificaitonToken = async (req, res, next) => {
     { username },
     {
       $push: {
-        userNotficationTokens: {
+        userNotificationTokens: {
           token: notificationToken,
           tokenCreatetionDate: new Date(),
-          failureCount: 0,
         },
       },
     }
@@ -76,10 +74,9 @@ const checkNotificaitonToken = async (req, res, next) => {
     { username },
     {
       $push: {
-        userNotficationTokens: {
+        userNotificationTokens: {
           token: notificationToken,
           tokenCreatetionDate: new Date(),
-          failureCount: 0,
         },
       },
     }

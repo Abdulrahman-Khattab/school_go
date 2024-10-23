@@ -21,7 +21,7 @@ const getMyNotifications = async (req, res) => {
   const { username } = req.user;
   const myNotifications = await Notification.find({
     tokens: { $elemMatch: { userUsername: username } },
-  });
+  }).select('-tokens');
 
   if (!myNotifications) {
     return notFoundError(res, 'ThereIsNoNotificationsForThisUser');

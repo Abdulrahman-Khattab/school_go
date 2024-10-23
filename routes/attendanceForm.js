@@ -29,7 +29,7 @@ Router.delete('/:id', authenticaiton, deleteAttendnceForm);
 Router.patch('/:id', authenticaiton, updateAttendnceForm);
 Router.get(
   '/getMyAttendanceAsStudent',
-  //authenticaiton,
+  authenticaiton,
   getMyAttendanceAsStudent
 );
 

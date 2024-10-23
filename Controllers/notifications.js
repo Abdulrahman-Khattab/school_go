@@ -18,9 +18,9 @@ const getAllNotifications = async (req, res) => {
 };
 
 const getMyNotifications = async (req, res) => {
-  const { userToken } = req.user;
+  const { username } = req.user;
   const myNotifications = await Notification.find({
-    tokens: { $in: [userToken] },
+    tokens: { $elemMatch: { userUsername: username } },
   });
 
   if (!myNotifications) {

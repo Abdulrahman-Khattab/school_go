@@ -76,14 +76,32 @@ const sendNotification = async (tokens, payload, failedTokens = []) => {
       const retryTokens = failedTokens.map((item) => item.token);
       await sendNotification(retryTokens, payload, failedTokens);
     }
+    // GET SUCESS TOKENS USERS
+    const sucessTokensUsers = [];
+    for (const token of successTokens) {
+      const schemas = [STUDENT_SCHEMA, TEACHER_SCHEMA, CONTROLLER_SCHEMA];
+      for (const schema of schemas) {
+        const sucessUser = await schema.findOne({
+          'userNotificationTokens.token': token,
+        });
 
+        if (sucessUser) {
+          sucessTokensUsers.push({
+            token: token,
+            userUsername: sucessUser.username,
+          });
+        }
+      }
+    }
+    // END OF SUCESS TOKENS USERS
     console.log('Add Notification to database');
+    console.log('SUCESS TOKEN USERS IS ', sucessTokensUsers);
     await Notification.create({
       notification: {
         title: payload.notification.title,
         body: payload.notification.body,
       },
-      tokens: successTokens,
+      tokens: sucessTokensUsers,
       extraData: payload.data.extraData,
     });
     console.log('Notification sent successfully:', response);

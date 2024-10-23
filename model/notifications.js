@@ -16,7 +16,18 @@ const notification_schema = new mongoose.Schema(
     },
 
     tokens: {
-      type: [String],
+      type: [
+        {
+          token: {
+            type: String,
+            required: true,
+          },
+          userUsername: {
+            type: String,
+            required: true,
+          },
+        },
+      ],
       required: [true, 'please provide tokens'],
     },
 

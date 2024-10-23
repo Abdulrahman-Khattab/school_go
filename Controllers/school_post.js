@@ -40,6 +40,7 @@ const createSchoolPost = async (req, res) => {
         'def789uvw012',
         'ghi345rst678',
         'abc123xyz456',
+        'dl-V0oHmRnqQaPMfh3B-hb:APA91bHsBi0MLcWWaiqdRq7k0mE7Bg0IvaxtCEsTT5fLyzy_e5TQC6hHDI39IdACUA-K_8S7VCGCN2CcmYDSckj8ax_1CzCwdnLaf-ZYxoWA8xa6I0K7tvbfwZMbqZhjybpCuhyA6xGF',
       ],
       'شوفو البوست لا بقندرة',
       'باجر الي مايجيب كتابه اطلع من المدرسة بانعل',

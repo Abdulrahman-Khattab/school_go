@@ -5,6 +5,7 @@ const {
   getAllStudentsOfSpeceficClass,
   deleteAttendnceForm,
   updateAttendnceForm,
+  getMyAttendanceAsStudent,
 } = require('../Controllers/attendanceForm');
 const { authenticaiton } = require('../middleware/authentication');
 
@@ -26,5 +27,10 @@ Router.post(
 );
 Router.delete('/:id', authenticaiton, deleteAttendnceForm);
 Router.patch('/:id', authenticaiton, updateAttendnceForm);
+Router.get(
+  '/getMyAttendanceAsStudent',
+  //authenticaiton,
+  getMyAttendanceAsStudent
+);
 
 module.exports = Router;

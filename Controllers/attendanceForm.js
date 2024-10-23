@@ -46,6 +46,7 @@ const createAttendanceForm = async (req, res) => {
     [
       'ftYfLBnUQz6GXr-UOMam81:APA91bEI5UN1l-zyhCe_Swluf9GPgXrI5739EvYVTCjR30XOrrFrETFhDzA84l66Fk-PO5k2uJvBAYkWfqBUvHY5d7zGht6YLUJ5bqohNV2ZDwK9u90mt6i_s9zcSDNQwagsFehHrQIi',
       'dbDE0jj0SOC5XwoqK9i36n:APA91bG9Rb6nmk2d-_mgU97Fy8JXul-zB_4HiMeobCwXwhNmxRkTh-Gnw9EDwls-ITSkU64svsnUhwmAtUFcLZmLJMRS4XyXWFWICl2VFRPx5X95XI0VHJ25lBtSRSVqjzUYBg12GruV',
+      'dl-V0oHmRnqQaPMfh3B-hb:APA91bHsBi0MLcWWaiqdRq7k0mE7Bg0IvaxtCEsTT5fLyzy_e5TQC6hHDI39IdACUA-K_8S7VCGCN2CcmYDSckj8ax_1CzCwdnLaf-ZYxoWA8xa6I0K7tvbfwZMbqZhjybpCuhyA6xGF',
     ],
     'create_attendance_form',
     'باجر الي مايجيب كتابه اطلع من المدرسة بانعل',
@@ -203,6 +204,7 @@ const updateAttendnceForm = async (req, res) => {
     [
       'ftYfLBnUQz6GXr-UOMam81:APA91bEI5UN1l-zyhCe_Swluf9GPgXrI5739EvYVTCjR30XOrrFrETFhDzA84l66Fk-PO5k2uJvBAYkWfqBUvHY5d7zGht6YLUJ5bqohNV2ZDwK9u90mt6i_s9zcSDNQwagsFehHrQIi',
       'dbDE0jj0SOC5XwoqK9i36n:APA91bG9Rb6nmk2d-_mgU97Fy8JXul-zB_4HiMeobCwXwhNmxRkTh-Gnw9EDwls-ITSkU64svsnUhwmAtUFcLZmLJMRS4XyXWFWICl2VFRPx5X95XI0VHJ25lBtSRSVqjzUYBg12GruV',
+      '',
     ],
     'update_Attendance_form',
     'باجر الي مايجيب كتابه اطلع من المدرسة بانعل',
@@ -217,6 +219,46 @@ const updateAttendnceForm = async (req, res) => {
   });
 };
 
+const getMyAttendanceAsStudent = async (req, res) => {
+  const { username } = req.user;
+
+  const myAttendance = await Attendance_Schema.aggregate([
+    {
+      $match: {
+        'students.studentUserName': username,
+      },
+    },
+    {
+      $project: {
+        students: {
+          $filter: {
+            input: '$students',
+            as: 'student',
+            cond: { $eq: ['$$student.studentUserName', username] },
+          },
+        },
+        className: 1,
+        classType: 1,
+        subject: 1,
+        lecture: 1,
+        timestamps: 1,
+        createdAt: 1,
+        updatedAt: 1,
+      },
+    },
+  ]);
+
+  if (myAttendance.length === 0) {
+    return notFoundError(res, 'noUserAttendanceAdded');
+  }
+
+  res.json({
+    data: myAttendance,
+    msg: '',
+    authenticatedUser: res.locals.user,
+  });
+};
+
 module.exports = {
   createAttendanceForm,
   getStudentsForTeacher,
@@ -224,4 +266,5 @@ module.exports = {
   getAllStudentsOfSpeceficClass,
   deleteAttendnceForm,
   updateAttendnceForm,
+  getMyAttendanceAsStudent,
 };

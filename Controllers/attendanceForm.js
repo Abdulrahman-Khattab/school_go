@@ -237,6 +237,7 @@ const getMyAttendanceAsStudent = async (req, res) => {
             cond: { $eq: ['$$student.studentUserName', username] },
           },
         },
+
         className: 1,
         classType: 1,
         subject: 1,
@@ -245,6 +246,9 @@ const getMyAttendanceAsStudent = async (req, res) => {
         createdAt: 1,
         updatedAt: 1,
       },
+    },
+    {
+      $unwind: '$students', // Unwind the filtered students array
     },
   ]);
 

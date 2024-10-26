@@ -801,7 +801,7 @@ const getMyStudentsGrade = async (req, res) => {
       className,
       classType,
     })),
-  });
+  }).select('_id name username className classType');
 
   console.log('BSBSBS', myStudentsGrade);
 

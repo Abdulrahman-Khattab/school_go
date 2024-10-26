@@ -803,17 +803,24 @@ const getMyStudentsGrade = async (req, res) => {
     })),
   });
 
+  console.log('BSBSBS', myStudentsGrade);
+
   const studentWithTheirMarks = await Promise.all(
     myStudentsGrade.map(async (student) => {
-      const studentWithGrade = await StudentMarks.find({
-        username: student.username,
-      });
+      console.log('NAKOR:', student.username);
+      const studentWithGrade = await StudentMarks.find(
+        { 'students.username': student.username },
+        { 'students.$': 1 } // Projection to return only the matching student object in the students array
+      );
 
       return {
+        studentInfo: student,
         studentGrade: studentWithGrade,
       };
     })
   );
+
+  console.log('MEOWWW', studentWithTheirMarks);
 
   res.json({
     data: studentWithTheirMarks,

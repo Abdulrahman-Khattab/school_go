@@ -810,7 +810,7 @@ const getMyStudentsGrade = async (req, res) => {
       console.log('NAKOR:', student.username);
       const studentWithGrade = await StudentMarks.find(
         { 'students.username': student.username },
-        { 'students.$': 1 } // Projection to return only the matching student object in the students array
+        { 'students.$': 1, subjectTitle: 1, examType: 1, createdAt: 1 } // Projection to return only the matching student object in the students array
       );
 
       return {

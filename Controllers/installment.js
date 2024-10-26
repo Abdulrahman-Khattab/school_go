@@ -105,19 +105,30 @@ const getMyInstallment = async (req, res) => {
   const myInstallment = await Installment.find({ username: username });
   await badRequestCheck(res, myInstallment, 'NoInstallmentForThisUser');
   res.json({
-    data: getAllStudentsInstallments,
+    data: myInstallment,
     msg: '',
     authenticatedUser: res.locals.user,
   });
 };
 
 const deleteInstallemnt = async (req, res) => {
-  res.send('delete my installment');
+  const { id } = req.params;
+  check_ID(res, id);
+  const deletedInstallment = await Installment.findOneAndDelete({ _id: id });
+  await notFoundCheck(res, deletedInstallment, 'ThisInstallmentDoesNotExist');
+
+  res.json({
+    data: deletedInstallment,
+    msg: '',
+    authenticatedUser: res.locals.user,
+  });
 };
 
 const updateInstallment = async (req, res) => {
   const { id } = req.params;
   check_ID(res, id);
+
+  const updateObject = {};
 
   const {
     username,
@@ -132,6 +143,7 @@ const updateInstallment = async (req, res) => {
   if (username) {
     const validUser = await STUDENT_SCHEMA.findOne({ username: username });
     await notFoundCheck(res, validUser, 'ThisUserNameNotValid');
+    updateObject.username = username;
   }
 
   if (totalPayment) {
@@ -163,24 +175,54 @@ const updateInstallment = async (req, res) => {
         totalPaymentInNumber = 0;
         break;
     }
+    updateObject.totalPayment = totalPaymentInNumber;
   }
 
-  const installmentRecord = await Installment.findOne({ _id: id });
-  const totalRecordedPayment = installmentRecord.totalPayment;
-
-  if (totalPayment) {
-    finalPaymentUpdate =
-      totalPaymentInNumber -
-      (constantDisscount ? constantDisscount : 0) -
-      totalPaymentInNumber *
-        ((prcentageDisscount ? prcentageDisscount : 0) / 100);
-  } else {
-    finalPaymentUpdate =
-      totalRecordedPayment -
-      (constantDisscount ? constantDisscount : 0) -
-      totalRecordedPayment *
-        ((prcentageDisscount ? prcentageDisscount : 0) / 100);
+  if (constantDisscount) {
+    updateObject.constantDisscount = constantDisscount;
   }
+
+  if (prcentageDisscount) {
+    updateObject.prcentageDisscount = prcentageDisscount;
+  }
+
+  if (currentPayment) {
+    updateObject.currentPayment = currentPayment;
+  }
+
+  const updatedInstallmentRecord = await Installment.findOneAndUpdate(
+    { _id: id },
+    updateObject,
+    {
+      runValidators: true,
+      new: true,
+    }
+  );
+
+  await notFoundCheck(
+    res,
+    updatedInstallmentRecord,
+    'ThereIsNoSuchInstallmentRecordInDB'
+  );
+
+  res.json({
+    data: updatedInstallmentRecord,
+    msg: '',
+    authenticatedUser: res.locals.user,
+  });
+};
+
+const getSingleInstallment = async (req, res) => {
+  const { id } = req.params;
+  check_ID(res, id);
+
+  const singleInstallment = await Installment.findOne({ _id: id });
+
+  res.json({
+    data: singleInstallment,
+    msg: '',
+    authenticatedUser: res.locals.user,
+  });
 };
 
 module.exports = {
@@ -189,4 +231,5 @@ module.exports = {
   getMyInstallment,
   deleteInstallemnt,
   updateInstallment,
+  getSingleInstallment,
 };

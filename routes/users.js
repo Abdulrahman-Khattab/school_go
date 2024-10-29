@@ -14,6 +14,7 @@ const {
   getMyTeachers,
   getMyStudentsGrade,
   testTokenFunction,
+  getAllTeachers,
 } = require('../Controllers/users');
 
 const express = require('express');
@@ -57,6 +58,7 @@ Router.patch(
 //============================
 
 Router.get('/teachers/myStudentGrade', authenticaiton, getMyStudentsGrade);
+Router.get('/teachers/GetAllTeachers', authenticaiton, getAllTeachers);
 
 //============================
 //STUDENT Routes

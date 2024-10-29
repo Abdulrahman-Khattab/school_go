@@ -36,6 +36,7 @@ const {
 const { attachCookieToResponse } = require('../utility/jwt');
 const createUserToken = require('../utility/createTokenUser');
 const create_notification = require('../utility/create_notification');
+const not_foundCheck = require('../utility/not_foundCheck');
 
 //============================
 //GENERAL FUNCTION
@@ -786,6 +787,33 @@ const getMyTeachers = async (req, res) => {
   });
 };
 
+const getAllTeachers = async (req, res) => {
+  // TEACHER INFO
+  const teacherId = req.user.userId;
+
+  if (!teacherId) {
+    return badRequestError(res, 'pleaseProvideID');
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+    return badRequestError(res, 'pleaseProvideCorrectID');
+  }
+
+  const validTeacher = await TEACHER_SCHEMA.findOne({ _id: teacherId });
+  await not_foundCheck(res, validTeacher, 'ThereIsNoSuchTeacherInDB');
+
+  // STUDENT TEACHER INFO
+  const teachersInfo = await TEACHER_SCHEMA.find({}).select(
+    'name image role subject gender'
+  );
+
+  res.json({
+    data: teachersInfo,
+    msg: '',
+    authenticatedUser: res.locals.user,
+  });
+};
+
 //============================
 //TEACHER FUNCTION
 //============================
@@ -865,4 +893,5 @@ module.exports = {
   getMyTeachers,
   getMyStudentsGrade,
   testTokenFunction,
+  getAllTeachers,
 };
